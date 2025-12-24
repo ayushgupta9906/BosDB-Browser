@@ -318,7 +318,7 @@ Built with:
 
 <div align="center">
 
-**Made with ❤️ for database developers**
+**Made with ❤️ OmniGanG*
 
 [Report Bug](https://github.com/your-repo/issues) • [Request Feature](https://github.com/your-repo/issues)
 
