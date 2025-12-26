@@ -1,9 +1,6 @@
 {
-    "version": 2,
-    "builds": [
-        {
-            "src": "apps/web/package.json",
-            "use": "@vercel/next"
-        }
-    ]
+    "buildCommand": "turbo run build --filter=@bosdb/web...",
+    "installCommand": "npm install",
+    "framework": "nextjs",
+    "outputDirectory": "apps/web/.next"
 }
