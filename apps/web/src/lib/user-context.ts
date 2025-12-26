@@ -1,5 +1,7 @@
 import { getCurrentUser } from './auth';
 
+export { getCurrentUser };
+
 export function promptForUserIfNeeded() {
     const user = getCurrentUser();
 

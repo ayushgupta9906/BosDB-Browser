@@ -173,15 +173,7 @@ export default function QueryPage() {
     const [pendingChanges, setPendingChanges] = useState<number>(0);
     const [editorRef, setEditorRef] = useState<any>(null);
 
-    // Table browser state
-    const [, setTableBrowser] = useState<{
-        active: boolean;
-        table: string;
-        schema: string;
-        page: number;
-        pageSize: number;
-        totalRows: number;
-    } | null>(null);
+
 
     useEffect(() => {
         if (connectionId) {
@@ -309,23 +301,6 @@ export default function QueryPage() {
         }
     }, [connectionId, query]);
 
-    const _viewTableData = async (tableName: string, schema: string = 'public', page: number = 1, pageSize: number = 100) => {
-        const offset = (page - 1) * pageSize;
-        const viewQuery = `SELECT * FROM ${schema}.${tableName} LIMIT ${pageSize} OFFSET ${offset};`;
-
-        setQuery(viewQuery);
-        setTableBrowser({
-            active: true,
-            table: tableName,
-            schema,
-            page,
-            pageSize,
-            totalRows: 0, // Will be updated after execution
-        });
-
-        // Execute the query
-        await executeQuery();
-    };
 
 
     const exportToCSV = () => {
