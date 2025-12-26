@@ -147,18 +147,18 @@ export class PostgreSQLAdapter extends BaseDBAdapter {
             const result = await client.query(request.query);
             const executionTime = Date.now() - startTime;
 
-            // Apply row limit
+            // Apply row limit (handle queries that don't return rows)
             const maxRows = request.maxRows || DEFAULT_MAX_ROWS;
-            const rows = result.rows.slice(0, maxRows);
-            const hasMore = result.rows.length > maxRows;
+            const rows = result.rows ? result.rows.slice(0, maxRows) : [];
+            const hasMore = result.rows ? result.rows.length > maxRows : false;
 
-            // Map fields
-            const fields: QueryField[] = result.fields.map((field) => ({
+            // Map fields (handle queries that don't return fields)
+            const fields: QueryField[] = result.fields ? result.fields.map((field) => ({
                 name: field.name,
                 dataType: this.mapDataType(field.dataTypeID),
                 tableID: field.tableID,
                 columnID: field.columnID,
-            }));
+            })) : [];
 
             return {
                 rows,

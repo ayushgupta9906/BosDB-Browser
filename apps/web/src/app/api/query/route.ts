@@ -147,10 +147,18 @@ export async function POST(request: NextRequest) {
             logger.error('Failed to save failed query to history', historyError);
         }
 
+        // Extract the actual database error message
+        let errorMessage = error.message;
+
+        // If error message contains "Query execution failed: ", extract just the DB error
+        if (errorMessage.includes('Query execution failed: ')) {
+            errorMessage = errorMessage.replace('Query execution failed: ', '');
+        }
+
         return NextResponse.json(
             {
-                error: 'Query execution failed',
-                message: error.message,
+                error: errorMessage, // Show actual database error
+                success: false,
             },
             { status: 500 }
         );

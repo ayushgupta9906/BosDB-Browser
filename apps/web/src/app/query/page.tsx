@@ -4,8 +4,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Editor from '@monaco-editor/react';
 import { useTheme } from 'next-themes';
-import { Play, Save, Download, Clock, Table as TableIcon, Database, ChevronRight, ChevronDown } from 'lucide-react';
+import { Play, Save, Download, Clock, Table as TableIcon, Database, ChevronRight, ChevronDown, GitBranch, MoreVertical } from 'lucide-react';
 import Link from 'next/link';
+import { trackChange, parseQueryForChanges, getPendingChanges } from '@/lib/vcs-helper';
+import ContextMenu, { MenuItem } from '@/components/ContextMenu';
 
 interface QueryResult {
     success: boolean;
@@ -169,13 +171,33 @@ export default function QueryPage() {
     const [schemas, setSchemas] = useState<any[]>([]);
     const [expandedSchemas, setExpandedSchemas] = useState<Set<string>>(new Set(['public']));
     const [schemaTables, setSchemaTables] = useState<Map<string, TableInfo[]>>(new Map());
+    const [pendingChanges, setPendingChanges] = useState<number>(0);
+    const [editorRef, setEditorRef] = useState<any>(null);
+
+    // Table browser state
+    const [contextMenu, setContextMenu] = useState<{ table: string; schema: string; x: number; y: number } | null>(null);
+    const [tableBrowser, setTableBrowser] = useState<{
+        active: boolean;
+        table: string;
+        schema: string;
+        page: number;
+        pageSize: number;
+        totalRows: number;
+    } | null>(null);
 
     useEffect(() => {
         if (connectionId) {
             fetchConnectionInfo();
             fetchSchemas();
+            loadPendingChanges();
         }
     }, [connectionId]);
+
+    const loadPendingChanges = async () => {
+        if (!connectionId) return;
+        const changes = await getPendingChanges(connectionId);
+        setPendingChanges(changes.length);
+    };
 
     const fetchConnectionInfo = async () => {
         try {
@@ -227,6 +249,20 @@ export default function QueryPage() {
             return;
         }
 
+        // Get selected text from editor, or use full query
+        let queryToExecute = query.trim();
+        if (editorRef) {
+            const selection = editorRef.getSelection();
+            const selectedText = editorRef.getModel()?.getValueInRange(selection);
+            if (selectedText && selectedText.trim()) {
+                queryToExecute = selectedText.trim();
+            }
+        }
+
+        if (!queryToExecute) {
+            return;
+        }
+
         setExecuting(true);
         setError('');
         setWarning('');
@@ -234,7 +270,7 @@ export default function QueryPage() {
 
         // Validate query syntax for database type
         if (connectionInfo) {
-            const syntaxWarning = validateQuerySyntax(query, connectionInfo.type);
+            const syntaxWarning = validateQuerySyntax(queryToExecute, connectionInfo.type);
             if (syntaxWarning) {
                 setWarning(syntaxWarning);
             }
@@ -246,7 +282,7 @@ export default function QueryPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     connectionId,
-                    query: query.trim(),
+                    query: queryToExecute,
                     timeout: 30000,
                     maxRows: 1000,
                 }),
@@ -259,12 +295,40 @@ export default function QueryPage() {
             }
 
             setResult(data);
+
+            // Track database changes for version control
+            if (connectionId && queryToExecute) {
+                const change = parseQueryForChanges(queryToExecute, data.rowCount);
+                if (change) {
+                    await trackChange(connectionId, change);
+                    await loadPendingChanges(); // Refresh pending count
+                }
+            }
         } catch (err: any) {
             setError(err.message);
         } finally {
             setExecuting(false);
         }
     }, [connectionId, query]);
+
+    const viewTableData = async (tableName: string, schema: string = 'public', page: number = 1, pageSize: number = 100) => {
+        const offset = (page - 1) * pageSize;
+        const viewQuery = `SELECT * FROM ${schema}.${tableName} LIMIT ${pageSize} OFFSET ${offset};`;
+
+        setQuery(viewQuery);
+        setTableBrowser({
+            active: true,
+            table: tableName,
+            schema,
+            page,
+            pageSize,
+            totalRows: 0, // Will be updated after execution
+        });
+
+        // Execute the query
+        await executeQuery();
+    };
+
 
     const exportToCSV = () => {
         if (!result || !result.rows.length) return;
@@ -429,6 +493,19 @@ export default function QueryPage() {
                             </button>
                         )}
 
+                        <Link
+                            href={`/version-control?connection=${connectionId}`}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition flex items-center gap-2 relative"
+                        >
+                            <GitBranch className="w-4 h-4" />
+                            Version Control
+                            {pendingChanges > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                    {pendingChanges}
+                                </span>
+                            )}
+                        </Link>
+
                         <div className="flex-1" />
 
                         {result && (
@@ -444,12 +521,13 @@ export default function QueryPage() {
 
                     {/* Editor */}
                     <div className="h-80 border-b border-border">
-                        <Editor
+                        < Editor
                             height="100%"
                             language="sql"
                             theme={theme === 'dark' ? 'vs-dark' : 'vs-light'}
                             value={query}
                             onChange={(value) => setQuery(value || '')}
+                            onMount={(editor) => setEditorRef(editor)}
                             options={{
                                 minimap: { enabled: false },
                                 fontSize: 14,

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Database, Zap, Shield, Users } from 'lucide-react';
+import { Database, Zap, Shield, Users, GitBranch } from 'lucide-react';
 
 export default function HomePage() {
     return (
@@ -23,17 +23,17 @@ export default function HomePage() {
                         >
                             Get Started
                         </Link>
-                        <a
-                            href="#features"
-                            className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-lg font-semibold transition-all backdrop-blur-sm"
+                        <Link
+                            href="/version-control"
+                            className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg"
                         >
-                            Learn More
-                        </a>
+                            🚀 Version Control (NEW!)
+                        </Link>
                     </div>
                 </header>
 
                 {/* Features */}
-                <section id="features" className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+                <section id="features" className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 mb-20">
                     <FeatureCard
                         icon={<Database className="w-10 h-10" />}
                         title="Multi-Database Support"
@@ -53,6 +53,12 @@ export default function HomePage() {
                         icon={<Users className="w-10 h-10" />}
                         title="Team Collaboration"
                         description="Multi-tenant workspaces with role-based access control"
+                    />
+                    <FeatureCard
+                        icon={<GitBranch className="w-10 h-10" />}
+                        title="Git-like Version Control"
+                        description="12 advanced Git features for databases - branches, tags, rebase, bisect & more!"
+                        highlight={true}
                     />
                 </section>
 
@@ -82,18 +88,31 @@ function FeatureCard({
     icon,
     title,
     description,
+    highlight = false,
 }: {
     icon: React.ReactNode;
     title: string;
     description: string;
+    highlight?: boolean;
 }) {
     return (
-        <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all group">
-            <div className="text-purple-400 mb-4 group-hover:scale-110 transition-transform">
+        <div className={`backdrop-blur-lg rounded-xl p-6 border transition-all group ${highlight
+                ? 'bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/50 ring-2 ring-blue-500/30'
+                : 'bg-white/5 border-white/10 hover:bg-white/10'
+            }`}>
+            <div className={`mb-4 group-hover:scale-110 transition-transform ${highlight ? 'text-blue-400' : 'text-purple-400'
+                }`}>
                 {icon}
             </div>
             <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
             <p className="text-gray-400">{description}</p>
+            {highlight && (
+                <div className="mt-3">
+                    <span className="inline-block px-2 py-1 bg-blue-500/30 text-blue-300 rounded text-xs font-semibold">
+                        🚀 NEW
+                    </span>
+                </div>
+            )}
         </div>
     );
 }
