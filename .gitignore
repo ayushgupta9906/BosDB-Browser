@@ -23,6 +23,9 @@ out/
 .bosdb-query-history.json
 .bosdb-saved-queries.json
 
+# BosDB version control data
+.bosdb-vc/
+
 # Logs
 logs/
 *.log

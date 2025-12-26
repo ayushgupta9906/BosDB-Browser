@@ -1,0 +1,20 @@
+{
+    "name": "@bosdb/version-control",
+    "version": "0.1.0",
+    "description": "Git-style version control for databases",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "test": "jest"
+    },
+    "dependencies": {
+        "@bosdb/core": "workspace:*",
+        "@bosdb/utils": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "typescript": "^5.0.0"
+    }
+}
