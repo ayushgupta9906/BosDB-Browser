@@ -1,4 +1,4 @@
-# BosDB - Production-Grade Database Management Tool
+# BosDB - Database Management Tool
 
 <div align="center">
 
