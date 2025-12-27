@@ -84,6 +84,9 @@ export async function POST(request: NextRequest) {
             database,
             credentials: encryptedCredentials,
             readOnly: config.readOnly,
+            readOnly: config.readOnly,
+            ownerId: body.userId || 'admin', // Default to admin if not provided
+            sharedWith: [], // Initial shared users list
             createdAt: new Date().toISOString(),
         };
 

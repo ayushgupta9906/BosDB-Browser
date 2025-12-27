@@ -3,6 +3,7 @@ export interface User {
     id: string;          // e.g., "ayush-g", "yuval.o"
     name: string;        // Full name
     email: string;
+    password?: string; // Optional for now to support existing users, but required for new ones
     role: 'admin' | 'user';
     createdAt: Date;
 }
@@ -71,6 +72,7 @@ export function initializeDefaultUsers(): void {
             name: 'Administrator',
             email: 'admin@bosdb.com',
             role: 'admin',
+            password: 'admin',
             createdAt: new Date(),
         };
 
