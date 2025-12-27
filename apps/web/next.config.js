@@ -11,10 +11,7 @@ const nextConfig = {
         'long',
         'named-placeholders'
     ],
-    // Disable static generation completely
-    output: undefined,
-    // Skip generating error pages
-    productionBrowserSourceMaps: false,
+    // Remove output setting to allow server-side rendering
     webpack: (config, { isServer }) => {
         if (!isServer) {
             config.resolve.fallback = {

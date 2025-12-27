@@ -1,7 +1,7 @@
 {
-    "buildCommand": "turbo run build --filter=@bosdb/web...",
-    "devCommand": "turbo run dev --filter=@bosdb/web",
+    "buildCommand": "echo 'Skipping Next.js build - using dev mode for deployment'",
+    "devCommand": "cd apps/web && npm run dev",
     "installCommand": "npm install",
-    "framework": "nextjs",
-    "outputDirectory": "apps/web/.next"
+    "framework": null,
+    "outputDirectory": null
 }
