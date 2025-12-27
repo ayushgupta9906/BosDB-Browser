@@ -318,199 +318,193 @@ function NewConnectionModal({
     onClose: () => void;
     onSuccess: () => void;
 }) {
-    const [formData, setFormData] = useState({
-        name: '',
-        type: 'postgresql',
-        host: '',
-        port: '5432',
-        database: '',
-        username: '',
-        password: '',
-        ssl: false,
-        readOnly: false,
-    });
-    const [testing, setTesting] = useState(false);
+    const router = useRouter();
+    const [provisioning, setProvisioning] = useState(false);
+    const [progress, setProgress] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setTesting(true);
+    const provisionDatabase = async (type: string) => {
+        setProvisioning(true);
+        setProgress(`Creating ${type} database...`);
         setError('');
 
         try {
-            const res = await fetch('/api/connections', {
+            const user = getCurrentUser();
+            if (!user) {
+                throw new Error('Not logged in');
+            }
+
+            // Call Docker provision API
+            const res = await fetch('/api/docker/provision', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-user-email': user.email || '',
+                },
                 body: JSON.stringify({
-                    ...formData,
-                    port: parseInt(formData.port),
+                    type,
+                    name: `My ${type.charAt(0).toUpperCase() + type.slice(1)} Database`,
+                    autoStart: true
                 }),
             });
 
             const data = await res.json();
 
             if (!res.ok) {
-                throw new Error(data.error || 'Failed to create connection');
+                throw new Error(data.error || 'Failed to create database');
             }
 
-            onSuccess();
+            setProgress('Database created! Setting up connection...');
+
+            // Auto-save connection
+            const connRes = await fetch('/api/connections', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: data.database.name,
+                    type: data.database.type,
+                    host: 'localhost',
+                    port: data.database.port,
+                    database: data.database.database,
+                    username: data.database.username,
+                    password: data.database.password,
+                    ssl: false,
+                    readOnly: false,
+                }),
+            });
+
+            const connData = await connRes.json();
+
+            if (!connRes.ok) {
+                throw new Error(connData.error || 'Failed to save connection');
+            }
+
+            setProgress('✅ Ready! Redirecting to query editor...');
+
+            // Redirect to query page
+            setTimeout(() => {
+                router.push(`/query?connection=${connData.id}`);
+            }, 1000);
+
         } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setTesting(false);
+            setError(err.message || 'Failed to create database');
+            setProvisioning(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-card border border-border rounded-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                <h2 className="text-2xl font-bold mb-6">New Database Connection</h2>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-card border border-border rounded-xl max-w-2xl w-full p-8">
+                <div className="flex justify-between items-start mb-6">
                     <div>
-                        <label className="block text-sm font-medium mb-2">Connection Name</label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                            placeholder="My PostgreSQL DB"
-                        />
+                        <h2 className="text-2xl font-bold mb-2">Create Database</h2>
+                        <p className="text-muted-foreground">
+                            Select a database type to get started instantly
+                        </p>
                     </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Database Type</label>
-                        <select
-                            value={formData.type}
-                            onChange={(e) => {
-                                const newType = e.target.value;
-                                const defaultPorts: { [key: string]: string } = {
-                                    postgresql: '5432',
-                                    mysql: '3306',
-                                    mariadb: '3306',
-                                    mongodb: '27017',
-                                    redis: '6379',
-                                };
-                                setFormData({
-                                    ...formData,
-                                    type: newType,
-                                    port: defaultPorts[newType] || formData.port
-                                });
-                            }}
-                            className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                        >
-                            <option value="postgresql">PostgreSQL</option>
-                            <option value="mysql">MySQL</option>
-                            <option value="mariadb">MariaDB</option>
-                            <option value="mongodb">MongoDB</option>
-                            <option value="redis">Redis</option>
-                        </select>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-2">Host</label>
-                            <input
-                                type="text"
-                                required
-                                value={formData.host}
-                                onChange={(e) => setFormData({ ...formData, host: e.target.value })}
-                                className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                placeholder="localhost"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-2">Port</label>
-                            <input
-                                type="number"
-                                required
-                                value={formData.port}
-                                onChange={(e) => setFormData({ ...formData, port: e.target.value })}
-                                className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Database Name</label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.database}
-                            onChange={(e) => setFormData({ ...formData, database: e.target.value })}
-                            className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                            placeholder="postgres"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Username</label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.username}
-                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                            className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Password</label>
-                        <input
-                            type="password"
-                            required
-                            value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                        />
-                    </div>
-
-                    <div className="flex gap-6">
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={formData.ssl}
-                                onChange={(e) => setFormData({ ...formData, ssl: e.target.checked })}
-                                className="w-4 h-4"
-                            />
-                            <span className="text-sm">Use SSL</span>
-                        </label>
-                        <label className="flex items-center gap-2">
-                            <input
-                                type="checkbox"
-                                checked={formData.readOnly}
-                                onChange={(e) => setFormData({ ...formData, readOnly: e.target.checked })}
-                                className="w-4 h-4"
-                            />
-                            <span className="text-sm">Read-only mode</span>
-                        </label>
-                    </div>
-
-                    {error && (
-                        <div className="p-4 bg-destructive/10 border border-destructive text-destructive rounded-lg text-sm">
-                            {error}
-                        </div>
-                    )}
-
-                    <div className="flex gap-4 pt-4">
+                    {!provisioning && (
                         <button
-                            type="button"
                             onClick={onClose}
-                            className="flex-1 px-6 py-3 border border-border rounded-lg hover:bg-accent transition"
+                            className="text-muted-foreground hover:text-foreground"
                         >
-                            Cancel
+                            ✕
                         </button>
+                    )}
+                </div>
+
+                {error && (
+                    <div className="mb-6 p-4 bg-red-500/10 border border-red-500 text-red-400 rounded-lg">
+                        {error}
+                    </div>
+                )}
+
+                {provisioning ? (
+                    <div className="text-center py-12">
+                        <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                        <p className="text-lg font-medium mb-2">{progress}</p>
+                        <p className="text-sm text-muted-foreground">
+                            This may take up to 30 seconds...
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 gap-4">
+                        {/* PostgreSQL */}
                         <button
-                            type="submit"
-                            disabled={testing}
-                            className="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition disabled:opacity-50"
+                            onClick={() => provisionDatabase('postgres')}
+                            className="p-6 border-2 border-border rounded-xl hover:border-primary hover:bg-primary/5 transition-all group text-left"
                         >
-                            {testing ? 'Testing Connection...' : 'Create Connection'}
+                            <div className="text-4xl mb-3">🐘</div>
+                            <h3 className="text-lg font-semibold mb-1">PostgreSQL</h3>
+                            <p className="text-sm text-muted-foreground">
+                                Advanced open-source database
+                            </p>
+                            <div className="mt-3 text-xs text-primary opacity-0 group-hover:opacity-100 transition">
+                                Click to create →
+                            </div>
+                        </button>
+
+                        {/* MySQL */}
+                        <button
+                            onClick={() => provisionDatabase('mysql')}
+                            className="p-6 border-2 border-border rounded-xl hover:border-primary hover:bg-primary/5 transition-all group text-left"
+                        >
+                            <div className="text-4xl mb-3">🐬</div>
+                            <h3 className="text-lg font-semibold mb-1">MySQL</h3>
+                            <p className="text-sm text-muted-foreground">
+                                Popular relational database
+                            </p>
+                            <div className="mt-3 text-xs text-primary opacity-0 group-hover:opacity-100 transition">
+                                Click to create →
+                            </div>
+                        </button>
+
+                        {/* MongoDB */}
+                        <button
+                            onClick={() => provisionDatabase('mongodb')}
+                            className="p-6 border-2 border-border rounded-xl hover:border-primary hover:bg-primary/5 transition-all group text-left"
+                        >
+                            <div className="text-4xl mb-3">🍃</div>
+                            <h3 className="text-lg font-semibold mb-1">MongoDB</h3>
+                            <p className="text-sm text-muted-foreground">
+                                NoSQL document database
+                            </p>
+                            <div className="mt-3 text-xs text-primary opacity-0 group-hover:opacity-100 transition">
+                                Click to create →
+                            </div>
+                        </button>
+
+                        {/* Redis */}
+                        <button
+                            onClick={() => provisionDatabase('redis')}
+                            className="p-6 border-2 border-border rounded-xl hover:border-primary hover:bg-primary/5 transition-all group text-left"
+                        >
+                            <div className="text-4xl mb-3">⚡</div>
+                            <h3 className="text-lg font-semibold mb-1">Redis</h3>
+                            <p className="text-sm text-muted-foreground">
+                                In-memory data store
+                            </p>
+                            <div className="mt-3 text-xs text-primary opacity-0 group-hover:opacity-100 transition">
+                                Click to create →
+                            </div>
                         </button>
                     </div>
-                </form>
+                )}
+
+                {!provisioning && (
+                    <div className="mt-6 pt-6 border-t border-border">
+                        <p className="text-sm text-muted-foreground text-center mb-3">
+                            Need to connect to an external database?
+                        </p>
+                        <button
+                            onClick={() => {/* TODO: Show external connection form */ }}
+                            className="w-full px-4 py-2 border border-border rounded-lg hover:bg-muted transition text-sm"
+                        >
+                            Use External Database Instead
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
+

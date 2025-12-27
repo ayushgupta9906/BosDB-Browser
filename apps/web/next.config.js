@@ -11,7 +11,10 @@ const nextConfig = {
         'aws-ssl-profiles',
         'long',
         'named-placeholders',
-        'bcrypt'
+        'bcrypt',
+        'dockerode',
+        'ssh2',
+        'docker-modem'
     ],
     // Remove output setting to allow server-side rendering
     webpack: (config, { isServer }) => {
