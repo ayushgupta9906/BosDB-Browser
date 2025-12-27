@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Database, Plus, Play, History, Save, LogOut, User, Shield, Zap, Star } from 'lucide-react';
+import { Database, Plus, Play, History, Save, LogOut, User, Shield, Zap, Star, Building } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getCurrentUser, logout } from '@/lib/auth';
-import { isPro, isTrial, fetchSystemSubscription } from '@/lib/subscription';
+import { fetchOrgSubscription, getOrgSubscriptionStatus } from '@/lib/subscription';
 
 interface Connection {
     id: string;
@@ -25,6 +25,7 @@ export default function DashboardPage() {
     const [showNewConnection, setShowNewConnection] = useState(false);
     const [currentUser, setCurrentUser] = useState<ReturnType<typeof getCurrentUser>>(null);
     const [subscriptionStatus, setSubscriptionStatus] = useState({ isPro: false, isTrial: false });
+    const [orgName, setOrgName] = useState<string | null>(null);
 
     useEffect(() => {
         // Check if user is logged in
@@ -35,10 +36,14 @@ export default function DashboardPage() {
         }
         setCurrentUser(user);
 
-        // Fetch system subscription status
-        fetchSystemSubscription().then(status => {
-            setSubscriptionStatus(status);
-        });
+        // Fetch organization subscription status
+        if (user.organizationId) {
+            fetchOrgSubscription(user.organizationId).then(status => {
+                setSubscriptionStatus(status);
+                const cached = getOrgSubscriptionStatus();
+                setOrgName(cached.orgName);
+            });
+        }
     }, [router]);
 
     useEffect(() => {
@@ -68,6 +73,12 @@ export default function DashboardPage() {
                             <span className="text-2xl font-bold">BosDB</span>
                         </Link>
                         <div className="flex items-center gap-4">
+                            {orgName && (
+                                <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                                    <Building className="w-4 h-4 text-blue-400" />
+                                    <span className="text-sm font-medium text-blue-400">{orgName}</span>
+                                </div>
+                            )}
                             {currentUser && (
                                 <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-lg">
                                     <User className="w-4 h-4 text-primary" />
@@ -102,8 +113,8 @@ export default function DashboardPage() {
                             )}
                             {subscriptionStatus.isPro && (
                                 <span className={`px-3 py-1 text-xs font-medium rounded-full flex items-center gap-1 ${subscriptionStatus.isTrial
-                                        ? 'bg-gradient-to-r from-green-500/20 to-teal-500/20 text-green-400'
-                                        : 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-400'
+                                    ? 'bg-gradient-to-r from-green-500/20 to-teal-500/20 text-green-400'
+                                    : 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-400'
                                     }`}>
                                     <Star className="w-3 h-3" />
                                     {subscriptionStatus.isTrial ? 'Trial' : 'Pro'}

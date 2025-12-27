@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Check, X, Zap, ArrowLeft, CreditCard, Shield, Star } from 'lucide-react';
 import { getCurrentUser } from '@/lib/auth';
-import { fetchSystemSubscription, PRICING } from '@/lib/subscription';
+import { fetchOrgSubscription, PRICING } from '@/lib/subscription';
 
 export default function PricingPage() {
     const router = useRouter();
@@ -22,10 +22,13 @@ export default function PricingPage() {
     const systemIsPro = subscriptionStatus.isPro;
 
     useEffect(() => {
-        fetchSystemSubscription().then(status => {
-            setSubscriptionStatus(status);
-        });
-    }, []);
+        // Fetch organization subscription
+        if (user?.organizationId) {
+            fetchOrgSubscription(user.organizationId).then(status => {
+                setSubscriptionStatus(status);
+            });
+        }
+    }, [user?.organizationId]);
 
     const handleUpgrade = (plan: 'pro_monthly' | 'pro_yearly' | 'pro_trial') => {
         if (!user) {
@@ -50,6 +53,7 @@ export default function PricingPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     plan: 'pro_trial',
+                    orgId: user?.organizationId, // Organization subscription
                     userId: user?.id
                 })
             });
@@ -92,6 +96,7 @@ export default function PricingPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     plan: selectedPlan,
+                    orgId: user?.organizationId, // Organization subscription
                     userId: user?.id,
                     cardNumber: cardNumber.replace(/\s/g, ''),
                     expiryDate: expiry,

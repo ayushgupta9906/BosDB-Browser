@@ -1,0 +1,117 @@
+[
+  {
+    "id": "company1.com",
+    "name": "Company1",
+    "type": "enterprise",
+    "domain": "company1.com",
+    "adminUserId": "test-user1",
+    "subscription": {
+      "plan": "free",
+      "isTrial": false
+    },
+    "createdAt": "2025-12-27T17:32:05.563Z",
+    "updatedAt": "2025-12-27T17:32:05.570Z"
+  },
+  {
+    "id": "ind-admin1",
+    "name": "admin1's Workspace",
+    "type": "individual",
+    "adminUserId": "admin1",
+    "subscription": {
+      "plan": "free",
+      "isTrial": false
+    },
+    "createdAt": "2025-12-27T17:45:16.631Z",
+    "updatedAt": "2025-12-27T17:45:16.631Z"
+  },
+  {
+    "id": "company2.com",
+    "name": "Company2",
+    "type": "enterprise",
+    "domain": "company2.com",
+    "adminUserId": "ayush",
+    "subscription": {
+      "plan": "free",
+      "isTrial": false
+    },
+    "createdAt": "2025-12-27T18:12:18.679Z",
+    "updatedAt": "2025-12-27T18:12:18.679Z"
+  },
+  {
+    "id": "ind-zz",
+    "name": "zz's Workspace",
+    "type": "individual",
+    "adminUserId": "zz",
+    "subscription": {
+      "plan": "free",
+      "isTrial": false
+    },
+    "createdAt": "2025-12-27T18:13:08.108Z",
+    "updatedAt": "2025-12-27T18:13:08.108Z"
+  },
+  {
+    "id": "aa.com",
+    "name": "Aa",
+    "type": "enterprise",
+    "domain": "aa.com",
+    "adminUserId": "arush",
+    "subscription": {
+      "plan": "free",
+      "isTrial": false
+    },
+    "createdAt": "2025-12-27T18:34:41.015Z",
+    "updatedAt": "2025-12-27T18:34:41.015Z"
+  },
+  {
+    "id": "gmail.com",
+    "name": "Gmail",
+    "type": "enterprise",
+    "domain": "gmail.com",
+    "adminUserId": "asdf",
+    "subscription": {
+      "plan": "free",
+      "isTrial": false
+    },
+    "createdAt": "2025-12-27T18:39:08.751Z",
+    "updatedAt": "2025-12-27T18:39:08.751Z"
+  },
+  {
+    "id": "asdf.com",
+    "name": "Asdf",
+    "type": "enterprise",
+    "domain": "asdf.com",
+    "adminUserId": "asdf",
+    "subscription": {
+      "plan": "pro",
+      "isTrial": false,
+      "activatedAt": "2025-12-27T18:53:57.929Z",
+      "expiresAt": "2026-12-27T18:53:57.929Z"
+    },
+    "createdAt": "2025-12-27T18:40:12.752Z",
+    "updatedAt": "2025-12-27T18:53:57.930Z"
+  },
+  {
+    "id": "ind-qwer",
+    "name": "qwer's Workspace",
+    "type": "individual",
+    "adminUserId": "qwer",
+    "subscription": {
+      "plan": "free",
+      "isTrial": false
+    },
+    "createdAt": "2025-12-27T18:43:03.101Z",
+    "updatedAt": "2025-12-27T18:43:03.101Z"
+  },
+  {
+    "id": "ind-mlp",
+    "name": "mlp's Workspace",
+    "type": "individual",
+    "adminUserId": "mlp",
+    "subscription": {
+      "plan": "free",
+      "isTrial": false
+    },
+    "createdAt": "2025-12-27T18:44:01.919Z",
+    "updatedAt": "2025-12-27T18:44:01.919Z"
+  }
+]

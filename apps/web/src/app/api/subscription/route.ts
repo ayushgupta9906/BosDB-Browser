@@ -1,17 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSystemSubscription, updateSystemSubscription, isSystemPro, isSystemTrial } from '@/lib/system-subscription';
+import { findOrganizationById, updateOrgSubscription } from '@/lib/organization';
+import { findUserById } from '@/lib/users-store';
 
-// GET /api/subscription - Get system subscription status
-export async function GET() {
+// GET /api/subscription - Get organization subscription status
+export async function GET(request: NextRequest) {
     try {
-        const subscription = getSystemSubscription();
-        const isPro = isSystemPro();
-        const isTrial = isSystemTrial();
+        // Get organization from query params or user
+        const orgId = request.nextUrl.searchParams.get('orgId');
+
+        if (!orgId) {
+            return NextResponse.json({
+                subscription: { plan: 'free', isTrial: false },
+                isPro: false,
+                isTrial: false
+            });
+        }
+
+        const org = findOrganizationById(orgId);
+        if (!org) {
+            return NextResponse.json({
+                subscription: { plan: 'free', isTrial: false },
+                isPro: false,
+                isTrial: false
+            });
+        }
+
+        const isPro = org.subscription.plan === 'pro';
+        const isExpired = org.subscription.expiresAt
+            ? new Date(org.subscription.expiresAt) < new Date()
+            : false;
 
         return NextResponse.json({
-            subscription,
-            isPro,
-            isTrial
+            subscription: org.subscription,
+            isPro: isPro && !isExpired,
+            isTrial: org.subscription.isTrial,
+            organization: {
+                id: org.id,
+                name: org.name,
+                type: org.type
+            }
         });
     } catch (error: any) {
         console.error('[Subscription API] Error:', error);
@@ -19,13 +46,23 @@ export async function GET() {
     }
 }
 
-// POST /api/subscription - Upgrade system subscription (demo payment)
+// POST /api/subscription - Upgrade organization subscription (demo payment)
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { plan, companyName, cardNumber, expiryDate, cvv, userId } = body;
+        const { plan, orgId, cardNumber, expiryDate, cvv, userId } = body;
 
-        console.log('[Subscription API] Processing upgrade for plan:', plan);
+        console.log('[Subscription API] Processing upgrade for plan:', plan, 'org:', orgId);
+
+        // Validate required fields
+        if (!orgId) {
+            return NextResponse.json({ error: 'Organization ID required' }, { status: 400 });
+        }
+
+        const org = findOrganizationById(orgId);
+        if (!org) {
+            return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+        }
 
         // Validate plan
         if (!plan || !['pro_trial', 'pro_monthly', 'pro_yearly'].includes(plan)) {
@@ -46,36 +83,49 @@ export async function POST(request: NextRequest) {
         }
 
         // Calculate expiry
-        let expiresAt: Date | null = null;
+        let expiresAt: string | null = null;
+        const now = new Date();
         if (plan === 'pro_trial') {
-            expiresAt = new Date();
-            expiresAt.setDate(expiresAt.getDate() + 30);
+            const expiry = new Date(now);
+            expiry.setDate(expiry.getDate() + 30);
+            expiresAt = expiry.toISOString();
         } else if (plan === 'pro_monthly') {
-            expiresAt = new Date();
-            expiresAt.setDate(expiresAt.getDate() + 30);
+            const expiry = new Date(now);
+            expiry.setDate(expiry.getDate() + 30);
+            expiresAt = expiry.toISOString();
         } else if (plan === 'pro_yearly') {
-            expiresAt = new Date();
-            expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+            const expiry = new Date(now);
+            expiry.setFullYear(expiry.getFullYear() + 1);
+            expiresAt = expiry.toISOString();
         }
 
-        // Update system subscription
-        const updated = updateSystemSubscription({
+        // Update organization subscription
+        const updated = updateOrgSubscription(orgId, {
             plan: 'pro',
             isTrial: plan === 'pro_trial',
-            companyName: companyName || 'Your Company',
-            activatedAt: new Date().toISOString(),
-            expiresAt: expiresAt?.toISOString() || null,
-            activatedBy: userId
+            activatedAt: now.toISOString(),
+            expiresAt: expiresAt
         });
 
+        if (!updated) {
+            return NextResponse.json({ error: 'Failed to update subscription' }, { status: 500 });
+        }
+
         const message = plan === 'pro_trial'
-            ? '🎉 Free trial activated! All users now have Pro features for 1 month!'
-            : '🎉 System upgraded to Pro! All users now have Pro features!';
+            ? `🎉 Free trial activated for "${org.name}"! All users now have Pro features for 1 month!`
+            : `🎉 "${org.name}" upgraded to Pro! All users now have Pro features!`;
+
+        console.log('[Subscription API]', message);
 
         return NextResponse.json({
             success: true,
             message,
-            subscription: updated
+            subscription: updated.subscription,
+            organization: {
+                id: updated.id,
+                name: updated.name,
+                type: updated.type
+            }
         });
     } catch (error: any) {
         console.error('[Subscription API] Error:', error);

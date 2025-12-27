@@ -49,6 +49,7 @@ export default function AdminPage() {
             const user = getCurrentUser(); // Get again for headers
             const headers = {
                 'x-user-id': user?.id || '',
+                'x-user-email': user?.email || '',
                 'x-user-role': user?.role || ''
             };
 

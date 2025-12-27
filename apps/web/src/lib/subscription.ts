@@ -1,20 +1,34 @@
-// Subscription helper functions
-// NOTE: This is for CLIENT-SIDE code. Server-side should use system-subscription.ts
+// Subscription helper functions (client-side)
+// For multi-tenant - subscriptions are per-organization
 
-// Client-side cache for system subscription status
-let cachedSystemSubscription: { isPro: boolean; isTrial: boolean } | null = null;
+// Client-side cache for organization subscription status
+let cachedOrgSubscription: {
+    isPro: boolean;
+    isTrial: boolean;
+    orgId: string | null;
+    orgName: string | null;
+} | null = null;
 
 /**
- * Fetch and cache system subscription status from server
+ * Fetch and cache organization subscription status from server
  * Call this on app load
  */
-export async function fetchSystemSubscription(): Promise<{ isPro: boolean; isTrial: boolean }> {
+export async function fetchOrgSubscription(orgId: string): Promise<{ isPro: boolean; isTrial: boolean }> {
+    if (!orgId) {
+        return { isPro: false, isTrial: false };
+    }
+
     try {
-        const res = await fetch('/api/subscription');
+        const res = await fetch(`/api/subscription?orgId=${encodeURIComponent(orgId)}`);
         if (res.ok) {
             const data = await res.json();
-            cachedSystemSubscription = { isPro: data.isPro, isTrial: data.isTrial };
-            return cachedSystemSubscription;
+            cachedOrgSubscription = {
+                isPro: data.isPro,
+                isTrial: data.isTrial,
+                orgId: data.organization?.id || null,
+                orgName: data.organization?.name || null
+            };
+            return { isPro: data.isPro, isTrial: data.isTrial };
         }
     } catch (err) {
         console.error('Failed to fetch subscription:', err);
@@ -23,25 +37,24 @@ export async function fetchSystemSubscription(): Promise<{ isPro: boolean; isTri
 }
 
 /**
- * Get cached system subscription status (synchronous)
+ * Get cached subscription status (synchronous)
  */
-export function getSystemSubscriptionStatus(): { isPro: boolean; isTrial: boolean } {
-    return cachedSystemSubscription || { isPro: false, isTrial: false };
+export function getOrgSubscriptionStatus(): { isPro: boolean; isTrial: boolean; orgId: string | null; orgName: string | null } {
+    return cachedOrgSubscription || { isPro: false, isTrial: false, orgId: null, orgName: null };
 }
 
 /**
- * Check if system has Pro (use cached value)
- * For enterprise model - applies to ALL users
+ * Check if current org has Pro (use cached value)
  */
 export function isPro(): boolean {
-    return cachedSystemSubscription?.isPro ?? false;
+    return cachedOrgSubscription?.isPro ?? false;
 }
 
 /**
- * Check if system is on trial
+ * Check if current org is on trial
  */
 export function isTrial(): boolean {
-    return cachedSystemSubscription?.isTrial ?? false;
+    return cachedOrgSubscription?.isTrial ?? false;
 }
 
 /**
@@ -66,7 +79,7 @@ export const FREE_FEATURES = [
 ] as const;
 
 /**
- * Check if a feature is available (based on system subscription)
+ * Check if a feature is available (based on org subscription)
  */
 export function canUseFeature(feature: string): boolean {
     // Free features are always available
@@ -74,7 +87,7 @@ export function canUseFeature(feature: string): boolean {
         return true;
     }
 
-    // Pro features require system subscription
+    // Pro features require subscription
     if ((PRO_FEATURES as readonly string[]).includes(feature)) {
         return isPro();
     }
@@ -87,7 +100,7 @@ export function canUseFeature(feature: string): boolean {
  * Get subscription status text for display
  */
 export function getSubscriptionStatusText(): string {
-    const status = getSystemSubscriptionStatus();
+    const status = getOrgSubscriptionStatus();
     if (!status.isPro) {
         return 'Free Plan';
     }
@@ -144,9 +157,10 @@ export const PRICING = {
         period: 'year',
         savings: '29%',
         features: [
-            'All Pro Monthly features',
-            '2 months FREE',
-            'Priority Support'
+            'Everything in Pro Monthly',
+            '2 Months FREE',
+            'Priority Support',
+            'Early Access to New Features'
         ]
     }
 };

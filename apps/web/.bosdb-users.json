@@ -102,5 +102,137 @@
     "password": "$2b$10$03rVuAXwhABdmEM1dxntneGnjeCZ.JyGockJW2JZM2jkVGX3KyV0C",
     "status": "approved",
     "createdAt": "2025-12-27T12:30:40.964Z"
+  },
+  {
+    "id": "test-user1",
+    "name": "Test User One",
+    "email": "test1@company1.com",
+    "role": "admin",
+    "accountType": "enterprise",
+    "password": "$2b$10$IK4NJC2L8SEL5BM/mWCR5.ou.XVb.0xsTKl4VOo9LBFKE4CiZNXy.",
+    "organizationId": "company1.com",
+    "status": "approved",
+    "createdAt": "2025-12-27T17:32:05.573Z"
+  },
+  {
+    "id": "admin1",
+    "name": "admin1",
+    "email": "admin1@gmail.com",
+    "role": "admin",
+    "accountType": "individual",
+    "password": "$2b$10$Ocvn6.kiPWbrFuzaa/MKZeegLRKOD89QSss3AuFt1fxI1npHzjpL2",
+    "organizationId": "ind-admin1",
+    "status": "approved",
+    "createdAt": "2025-12-27T17:45:16.632Z"
+  },
+  {
+    "id": "ayush",
+    "name": "Ayush",
+    "email": "test2@company2.com",
+    "role": "admin",
+    "accountType": "enterprise",
+    "password": "$2b$10$2PUyKH2oOKVxfI6/5bQEAOMIOdNZiKH4ZpGzHLzSA5quW0rdWLTU.",
+    "organizationId": "company2.com",
+    "status": "approved",
+    "createdAt": "2025-12-27T18:12:18.680Z"
+  },
+  {
+    "id": "zz",
+    "name": "zz",
+    "email": "zz@gmail.com",
+    "role": "user",
+    "accountType": "individual",
+    "password": "$2b$10$xwc2Q9.3x/vGObEFcKRTH.NADZD3QES4trN8ATQ8psv92m5/PIAZK",
+    "organizationId": "ind-zz",
+    "status": "approved",
+    "createdAt": "2025-12-27T18:13:08.109Z"
+  },
+  {
+    "id": "arush",
+    "name": "arush",
+    "email": "arush@company2.com",
+    "role": "user",
+    "accountType": "enterprise",
+    "password": "$2b$10$ORseIdTaM/rHz44Se2DKnuq6nESQLYvZ4CI3k9NDTSPb/mkVMkB8y",
+    "organizationId": "company2.com",
+    "status": "pending",
+    "createdAt": "2025-12-27T18:13:40.534Z"
+  },
+  {
+    "id": "arush",
+    "name": "arush",
+    "email": "arush@aa.com",
+    "role": "admin",
+    "accountType": "enterprise",
+    "password": "$2b$10$x2vGUP.96vwp7sY9HnJxF.vbaR0wBFfYz8JF4ZAo0nL8mv0iYlNk.",
+    "organizationId": "aa.com",
+    "status": "approved",
+    "createdAt": "2025-12-27T18:34:41.016Z"
+  },
+  {
+    "id": "asdf",
+    "name": "asdf",
+    "email": "asdfd@gmail.com",
+    "role": "admin",
+    "accountType": "enterprise",
+    "password": "$2b$10$1rIOzbabfOaZRL4CJQl59.pNAPy3r2/pE8IyqPO/wEsczg9AZnAQO",
+    "organizationId": "gmail.com",
+    "status": "approved",
+    "createdAt": "2025-12-27T18:39:08.752Z"
+  },
+  {
+    "id": "asdf",
+    "name": "asdf",
+    "email": "asdf@asdf.com",
+    "role": "admin",
+    "accountType": "enterprise",
+    "password": "$2b$10$Bf6NpYLQNK0AMm9FWZwsquawMB5Bs8EthrslEBLshsjX9Qs87nglu",
+    "organizationId": "asdf.com",
+    "status": "approved",
+    "createdAt": "2025-12-27T18:40:12.752Z"
+  },
+  {
+    "id": "aa",
+    "name": "aa",
+    "email": "as@asdf.com",
+    "role": "user",
+    "accountType": "enterprise",
+    "password": "$2b$10$QdNx.r6CHayihOgclLa.eene66cs7d4REIOpPswRjobga73BoBJN2",
+    "organizationId": "asdf.com",
+    "status": "approved",
+    "createdAt": "2025-12-27T18:40:54.709Z"
+  },
+  {
+    "id": "qwer",
+    "name": "qwer",
+    "email": "qwer@mlp.com",
+    "role": "user",
+    "accountType": "individual",
+    "password": "$2b$10$DINmRRQCvcahenV9PW.Xy.mFQDbWACd4dAdvyxfj52.mNG1iCrs3.",
+    "organizationId": "ind-qwer",
+    "status": "approved",
+    "createdAt": "2025-12-27T18:43:03.102Z"
+  },
+  {
+    "id": "mlp",
+    "name": "mlp",
+    "email": "mlp@mlp.com",
+    "role": "user",
+    "accountType": "individual",
+    "password": "$2b$10$MkO2OTfrcv3vziYrWv1ef.5ssAWtIpgkdE9PKaTUDM2KsefcYJMKa",
+    "organizationId": "ind-mlp",
+    "status": "approved",
+    "createdAt": "2025-12-27T18:44:01.920Z"
+  },
+  {
+    "id": "asdf1",
+    "name": "asdf1",
+    "email": "asdf11@asdf.com",
+    "role": "user",
+    "accountType": "enterprise",
+    "password": "$2b$10$69EUslVaQxDVoj8Z9OfptuA1iqCnuExYamPjyQUSubAqvITL/q.RC",
+    "organizationId": "asdf.com",
+    "status": "pending",
+    "createdAt": "2025-12-27T18:49:23.444Z"
   }
 ]

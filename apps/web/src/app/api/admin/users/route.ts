@@ -1,29 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUsers, createUser, findUserByEmail } from '@/lib/users-store';
+import { getUsers, createUser, findUserByEmail, getUsersByOrg } from '@/lib/users-store';
 import { requireAdmin, verifyAdminRole } from '@/middleware/requireAdmin';
 
-// GET /api/admin/users - List all users
+// GET /api/admin/users - List users from admin's organization only
 export async function GET(request: NextRequest) {
     try {
-        // In a real app, verify admin session here
-        // requireAdmin(request);
-
-        // For now, client sends x-user-role header or we assume it's protected by frontend
-        // But let's check header for safety if implementing properly
+        // Get current user's email from header (passed by frontend)
+        const userEmail = request.headers.get('x-user-email');
         const role = request.headers.get('x-user-role');
+
+        if (!userEmail) {
+            return NextResponse.json({ error: 'User email required' }, { status: 401 });
+        }
+
         if (role && role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        const users = getUsers();
+        // Find the admin user to get their organization
+        const adminUser = findUserByEmail(userEmail);
+        if (!adminUser || !adminUser.organizationId) {
+            return NextResponse.json({ error: 'Admin user not found' }, { status: 404 });
+        }
 
-        // Return users without sensitive data (like passwords if we add them)
-        const sanitizedUsers = users.map(u => ({
+        // Get users from the same organization only
+        const orgUsers = getUsersByOrg(adminUser.organizationId);
+
+        // Return users without sensitive data
+        const sanitizedUsers = orgUsers.map(u => ({
             id: u.id,
             name: u.name,
             email: u.email,
             role: u.role,
             status: u.status,
+            accountType: u.accountType,
             createdAt: u.createdAt
         }));
 
@@ -34,13 +44,24 @@ export async function GET(request: NextRequest) {
     }
 }
 
-// POST /api/admin/users - Create a new user
+// POST /api/admin/users - Create a new user in admin's organization
 export async function POST(request: NextRequest) {
     try {
         // requireAdmin(request);
 
         const body = await request.json();
         const { name, email, password, role } = body;
+
+        // Get admin's email to determine organization
+        const adminEmail = request.headers.get('x-user-email');
+        if (!adminEmail) {
+            return NextResponse.json({ error: 'Admin email required' }, { status: 401 });
+        }
+
+        const adminUser = findUserByEmail(adminEmail);
+        if (!adminUser || !adminUser.organizationId) {
+            return NextResponse.json({ error: 'Admin user not found' }, { status: 404 });
+        }
 
         if (!name || !email || !password || !role) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -58,6 +79,8 @@ export async function POST(request: NextRequest) {
             password, // In real app, hash this!
             role: role as 'admin' | 'user',
             status: 'approved' as const, // Admin-created users are auto-approved
+            accountType: adminUser.accountType, // Same as admin
+            organizationId: adminUser.organizationId, // Same organization as admin
             createdAt: new Date()
         };
 

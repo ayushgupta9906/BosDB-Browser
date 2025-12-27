@@ -15,6 +15,7 @@
     "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
+    "@types/whatwg-url": "^13.0.0",
     "prettier": "^3.0.3",
     "turbo": "^1.10.16",
     "typescript": "^5.2.2"

@@ -24,8 +24,10 @@ export interface User {
     password?: string; // Optional for now to support existing users, but required for new ones
     role: 'admin' | 'user';
     status: 'pending' | 'approved' | 'rejected';
+    accountType: 'individual' | 'enterprise'; // Multi-tenant mode
+    organizationId: string; // Organization this user belongs to
     permissions?: ConnectionPermission[]; // Granular permissions per connection
-    subscription?: Subscription; // Pro subscription
+    subscription?: Subscription; // Pro subscription (legacy - now per org)
     createdAt: Date;
 }
 
@@ -134,13 +136,15 @@ export function initializeDefaultUsers(): void {
     const users = getAllUsers();
 
     if (users.length === 0) {
-        // Create default admin
+        // Create default admin (individual mode by default)
         const admin: User = {
             id: 'admin',
             name: 'Administrator',
             email: 'admin@bosdb.com',
             role: 'admin',
             status: 'approved',
+            accountType: 'individual',
+            organizationId: 'ind-admin',
             password: 'admin',
             createdAt: new Date(),
         };

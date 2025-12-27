@@ -27,9 +27,11 @@ export default function LoginPage() {
     name: '',
     email: '',
     password: '',
-    role: 'user' as 'admin' | 'user'
+    role: 'user' as 'admin' | 'user',
+    accountType: 'enterprise' as 'individual' | 'enterprise'
   });
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   // Fetch users from server on mount
   useEffect(() => {
@@ -73,7 +75,7 @@ export default function LoginPage() {
     setError('');
 
     if (!userId.trim()) {
-      setError('Please enter your user ID');
+      setError('Please enter your email');
       return;
     }
 
@@ -88,7 +90,7 @@ export default function LoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'login',
-          userId: userId.trim(),
+          email: userId.trim(), // Using email for login
           password: password
         })
       });
@@ -108,6 +110,7 @@ export default function LoginPage() {
 
   const handleRegister = async () => {
     setError('');
+    setSuccessMessage('');
 
     try {
       const res = await fetch('/api/auth', {
@@ -123,14 +126,20 @@ export default function LoginPage() {
 
       if (!res.ok) throw new Error(data.error || 'Registration failed');
 
-      alert(`✅ User ${newUser.id} created successfully! ${users.length === 0 ? '(Approved as First Admin)' : '(Pending Admin Approval)'}`);
+      // Show the message from API response (first user or pending approval)
+      setSuccessMessage(data.message || 'Registration successful!');
+
+      // Clear form
       setShowRegister(false);
-      setNewUser({ id: '', name: '', email: '', password: '', role: 'user' });
+      setNewUser({ id: '', name: '', email: '', password: '', role: 'user', accountType: 'enterprise' });
 
       // Refresh list
       const listRes = await fetch('/api/auth');
       const listData = await listRes.json();
       setUsers(listData.users || []);
+
+      // Clear success message after 5 seconds
+      setTimeout(() => setSuccessMessage(''), 5000);
 
     } catch (err: any) {
       setError(err.message);
@@ -152,6 +161,13 @@ export default function LoginPage() {
           <p className="text-gray-400">Database Version Control System</p>
         </div>
 
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-6 p-4 bg-green-500/10 border border-green-500 text-green-400 rounded-lg text-sm animate-fadeIn">
+            ✅ {successMessage}
+          </div>
+        )}
+
         {!showRegister ? (
           // Login Form
           <div className="bg-gray-800 rounded-xl p-8 border border-gray-700">
@@ -165,14 +181,14 @@ export default function LoginPage() {
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                User ID
+                Email
               </label>
               <input
-                type="text"
+                type="email"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                placeholder="e.g., admin"
+                placeholder="e.g., admin@company.com"
                 className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
               />
             </div>
@@ -217,6 +233,42 @@ export default function LoginPage() {
                 {error}
               </div>
             )}
+
+            {/* Account Type Selection */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-3">
+                How will you use BosDB?
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setNewUser({ ...newUser, accountType: 'individual' })}
+                  className={`p-4 rounded-lg border-2 transition-all ${newUser.accountType === 'individual'
+                    ? 'border-purple-500 bg-purple-500/20 text-white'
+                    : 'border-gray-600 bg-gray-900 text-gray-400 hover:border-gray-500'
+                    }`}
+                >
+                  <div className="text-lg mb-1">👤 Individual</div>
+                  <div className="text-xs opacity-70">Personal use</div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNewUser({ ...newUser, accountType: 'enterprise' })}
+                  className={`p-4 rounded-lg border-2 transition-all ${newUser.accountType === 'enterprise'
+                    ? 'border-purple-500 bg-purple-500/20 text-white'
+                    : 'border-gray-600 bg-gray-900 text-gray-400 hover:border-gray-500'
+                    }`}
+                >
+                  <div className="text-lg mb-1">🏢 Enterprise</div>
+                  <div className="text-xs opacity-70">Company/Team</div>
+                </button>
+              </div>
+              {newUser.accountType === 'enterprise' && (
+                <p className="mt-2 text-xs text-gray-400">
+                  💡 All users with the same email domain will be grouped together
+                </p>
+              )}
+            </div>
 
             <div className="space-y-4 mb-6">
               <div>
