@@ -5,6 +5,7 @@ export interface User {
     email: string;
     password?: string; // Optional for now to support existing users, but required for new ones
     role: 'admin' | 'user';
+    status: 'pending' | 'approved' | 'rejected';
     createdAt: Date;
 }
 
@@ -31,6 +32,11 @@ export function login(userId: string): User | null {
     const user = users.find(u => u.id === userId);
 
     if (user) {
+        if (user.status !== 'approved') {
+            throw new Error(user.status === 'pending'
+                ? 'Your account is pending admin approval.'
+                : 'Your account has been rejected.');
+        }
         localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
         return user;
     }
@@ -49,6 +55,7 @@ export function registerUser(user: Omit<User, 'createdAt'>): void {
 
     const newUser: User = {
         ...user,
+        status: 'pending', // Default to pending
         createdAt: new Date(),
     };
 
@@ -72,6 +79,7 @@ export function initializeDefaultUsers(): void {
             name: 'Administrator',
             email: 'admin@bosdb.com',
             role: 'admin',
+            status: 'approved',
             password: 'admin',
             createdAt: new Date(),
         };

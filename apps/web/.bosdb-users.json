@@ -1,0 +1,26 @@
+[
+  {
+    "id": "admin",
+    "name": "Administrator",
+    "email": "admin@bosdb.com",
+    "role": "admin",
+    "createdAt": "2025-12-27T09:49:18.394Z",
+    "password": "admin"
+  },
+  {
+    "id": "arush",
+    "name": "arusg",
+    "email": "arush@gmail.com",
+    "password": "ff",
+    "role": "user",
+    "createdAt": "2025-12-27T09:49:18.394Z"
+  },
+  {
+    "id": "arushi",
+    "name": "yy",
+    "email": "arushi@gmail.com",
+    "password": "y",
+    "role": "admin",
+    "createdAt": "2025-12-27T09:52:39.455Z"
+  }
+]

@@ -21,6 +21,7 @@ export function getUsers(): User[] {
         name: 'Administrator',
         email: 'admin@bosdb.com',
         role: 'admin',
+        status: 'approved',
         createdAt: new Date(),
         password: 'admin' // Default password, should be changed
     } as any]; // Use any to bypass password check until User model is updated
