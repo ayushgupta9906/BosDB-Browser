@@ -10,7 +10,8 @@ const nextConfig = {
         'seq-queue',
         'aws-ssl-profiles',
         'long',
-        'named-placeholders'
+        'named-placeholders',
+        'bcrypt'
     ],
     // Remove output setting to allow server-side rendering
     webpack: (config, { isServer }) => {
