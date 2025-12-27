@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes';
 import { Play, Save, Download, Clock, Table as TableIcon, Database, ChevronRight, ChevronDown, GitBranch } from 'lucide-react';
 import Link from 'next/link';
 import { trackChange, parseQueryForChanges, getPendingChanges } from '@/lib/vcs-helper';
+import { extractTableName } from '@/lib/sql-helper';
 import { DataEditor } from '@/components/DataEditor';
 
 interface QueryResult {
@@ -551,7 +552,7 @@ export default function QueryPage() {
                                                         body: JSON.stringify({
                                                             connectionId,
                                                             schema: 'public', // TODO: Get detailed schema info
-                                                            table: result.fields[0]?.tableID ? 'TODO_GET_TABLE_NAME' : 'users', // Fallback/Hack for now until we parse table name
+                                                            table: extractTableName(query) || 'users',
                                                             updates
                                                         })
                                                     });

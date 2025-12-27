@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connections, adapterInstances, getAdapter } from '@/lib/store';
+import { connections } from '@/lib/store';
+import { getConnectedAdapter } from '@/lib/db-utils';
 import { generateUpdateStatement } from '@/lib/sql-helper';
 
 export async function POST(request: NextRequest) {
@@ -18,10 +19,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Get adapter instance
-        let adapter = adapterInstances.get(connectionId);
-        if (!adapter) {
-            adapter = await getAdapter(connectionId);
-        }
+        const adapter = await getConnectedAdapter(connectionId);
 
         const results = [];
         const errors = [];
