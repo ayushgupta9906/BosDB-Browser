@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Database, Plus, Play, History, Save, LogOut, User } from 'lucide-react';
+import { Database, Plus, Play, History, Save, LogOut, User, Shield } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getCurrentUser, logout } from '@/lib/auth';
@@ -78,6 +78,14 @@ export default function DashboardPage() {
                                     Settings
                                 </button>
                             </Link>
+                            {currentUser?.role === 'admin' && (
+                                <Link href="/admin">
+                                    <button className="px-4 py-2 text-sm font-medium text-primary hover:text-primary/80 transition flex items-center gap-1">
+                                        <Shield className="w-4 h-4" />
+                                        Admin Panel
+                                    </button>
+                                </Link>
+                            )}
                             <button
                                 onClick={() => {
                                     logout();
