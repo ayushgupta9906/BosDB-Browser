@@ -4,7 +4,7 @@ export function generateUpdateStatement(
     table: string,
     primaryKey: { [key: string]: any },
     changes: { [key: string]: any },
-    dbType: string
+    _dbType: string
 ): string {
     const setClauses: string[] = [];
     const values: any[] = [];
@@ -60,4 +60,16 @@ export function detectPrimaryKey(fields: { name: string, dataType: string }[]): 
     if (fields.length > 0) return [fields[0].name];
 
     return [];
+}
+
+export function extractTableName(query: string): string | null {
+    // Basic regex to find FROM clause
+    // Matches: FROM table | FROM schema.table | FROM "table"
+    const match = query.match(/\bfrom\s+([a-zA-Z0-9_."]+)/i);
+    if (match && match[1]) {
+        // Strip quotes and return simple table name (ignoring schema for now if present)
+        const parts = match[1].replace(/["`]/g, '').split('.');
+        return parts[parts.length - 1];
+    }
+    return null;
 }
