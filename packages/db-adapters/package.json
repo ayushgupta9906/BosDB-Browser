@@ -1,0 +1,29 @@
+{
+    "name": "@bosdb/db-adapters",
+    "version": "0.1.0",
+    "private": true,
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "clean": "rm -rf dist",
+        "lint": "eslint src/",
+        "test": "jest"
+    },
+    "dependencies": {
+        "@bosdb/core": "*",
+        "@bosdb/utils": "*",
+        "pg": "^8.11.3",
+        "mysql2": "^3.6.0",
+        "mongodb": "^6.3.0",
+        "ioredis": "^5.3.2"
+    },
+    "devDependencies": {
+        "@types/node": "^20.8.0",
+        "@types/pg": "^8.10.7",
+        "typescript": "^5.2.2",
+        "jest": "^29.7.0",
+        "@types/jest": "^29.5.5"
+    }
+}

@@ -1,0 +1,68 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "types": [
+      "node"
+    ],
+    "jsx": "preserve",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@bosdb/core": [
+        "../../packages/core/src/index.ts"
+      ],
+      "@bosdb/db-adapters": [
+        "../../packages/db-adapters/src/index.ts"
+      ],
+      "@bosdb/security": [
+        "../../packages/security/src/index.ts"
+      ],
+      "@bosdb/utils": [
+        "../../packages/utils/src/index.ts"
+      ]
+    },
+    "incremental": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "noEmit": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    "build/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "references": [
+    {
+      "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/db-adapters"
+    },
+    {
+      "path": "../../packages/security"
+    },
+    {
+      "path": "../../packages/utils"
+    }
+  ]
+}
