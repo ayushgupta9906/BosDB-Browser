@@ -1,14 +1,11 @@
+
 // Organization management for multi-tenant BosDB
 // Supports Individual (single user) and Enterprise (company) modes
 
-import fs from 'fs';
-import path from 'path';
+import connectDB from './db';
+import Organization, { IOrganization } from '@/models/Organization';
 
-const DATA_DIR = path.join(process.cwd(), '.bosdb-data');
-const ORGS_DIR = path.join(DATA_DIR, 'orgs');
-const ORGS_INDEX = path.join(DATA_DIR, 'organizations.json');
-
-// Organization types
+export type { IOrganization as Organization };
 export type OrganizationType = 'individual' | 'enterprise';
 
 export interface Subscription {
@@ -19,190 +16,161 @@ export interface Subscription {
     expiresAt?: string | null;
 }
 
-export interface Organization {
-    id: string;              // For enterprise: domain (newgentsoft.com), for individual: "ind-{userId}"
-    name: string;            // Display name (company name or user's name)
-    type: OrganizationType;  // 'individual' or 'enterprise'
-    domain?: string;         // For enterprise: email domain
-    adminUserId: string;     // First user who created / admin
-    subscription: Subscription;
-    createdAt: string;
-    updatedAt: string;
+export const COMMON_EMAIL_DOMAINS = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'icloud.com'];
+
+// Helper to ensure DB is connected
+async function ensureDB() {
+    await connectDB();
 }
 
-// Ensure directories exist
-function ensureDataDirs(): void {
-    if (!fs.existsSync(DATA_DIR)) {
-        fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-    if (!fs.existsSync(ORGS_DIR)) {
-        fs.mkdirSync(ORGS_DIR, { recursive: true });
-    }
+export async function getOrganizationById(id: string): Promise<IOrganization | null> {
+    await ensureDB();
+    const org = await Organization.findOne({ id }).lean();
+    return org as IOrganization | null;
 }
 
-// Get all organizations
-export function getAllOrganizations(): Organization[] {
-    ensureDataDirs();
-    try {
-        if (fs.existsSync(ORGS_INDEX)) {
-            return JSON.parse(fs.readFileSync(ORGS_INDEX, 'utf-8'));
-        }
-    } catch (err) {
-        console.error('[Org Store] Error reading organizations:', err);
-    }
-    return [];
+// Alias for backward compatibility
+export const findOrganizationById = getOrganizationById;
+
+export async function findOrganizationByDomain(domain: string): Promise<IOrganization | null> {
+    await ensureDB();
+    // For enterprise organizations, the 'id' field is often the domain itself.
+    // Also check the 'domain' field explicitly for robustness since we might have migrated data or different schemas
+    const org = await Organization.findOne({
+        $or: [
+            { id: domain, type: 'enterprise' },
+            { domain: domain.toLowerCase(), type: 'enterprise' } // Assuming 'domain' field exists in schema or is flexible
+        ]
+    }).lean();
+    return org as IOrganization | null;
 }
 
-// Save all organizations
-function saveOrganizations(orgs: Organization[]): void {
-    ensureDataDirs();
-    fs.writeFileSync(ORGS_INDEX, JSON.stringify(orgs, null, 2));
+export async function saveOrganization(org: Partial<IOrganization>): Promise<void> {
+    await ensureDB();
+    // Using updateOne with upsert to handle both create and update efficiently
+    if (!org.id) throw new Error("Organization ID is required for saving");
+
+    await Organization.updateOne(
+        { id: org.id },
+        { $set: org },
+        { upsert: true }
+    );
 }
 
-// Find organization by ID
-export function findOrganizationById(id: string): Organization | null {
-    const orgs = getAllOrganizations();
-    return orgs.find(o => o.id === id) || null;
+export async function updateOrganization(orgId: string, updates: Partial<IOrganization>): Promise<void> {
+    await ensureDB();
+    await Organization.updateOne(
+        { id: orgId },
+        { $set: { ...updates, updatedAt: new Date() } }
+    );
 }
 
-// Find organization by domain (for enterprise)
-export function findOrganizationByDomain(domain: string): Organization | null {
-    const orgs = getAllOrganizations();
-    return orgs.find(o => o.type === 'enterprise' && o.domain === domain.toLowerCase()) || null;
-}
-
-// Create organization
-export function createOrganization(org: Omit<Organization, 'createdAt' | 'updatedAt'>): Organization {
-    ensureDataDirs();
-    const orgs = getAllOrganizations();
-
-    // Check if org already exists
-    if (orgs.find(o => o.id === org.id)) {
-        throw new Error('Organization already exists');
-    }
-
-    const newOrg: Organization = {
-        ...org,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-    };
-
-    orgs.push(newOrg);
-    saveOrganizations(orgs);
-
-    // Create org-specific directory
-    const orgDir = path.join(ORGS_DIR, newOrg.id);
-    if (!fs.existsSync(orgDir)) {
-        fs.mkdirSync(orgDir, { recursive: true });
-    }
-
-    console.log(`[Org Store] Created organization: ${newOrg.id} (${newOrg.type})`);
-    return newOrg;
-}
-
-// Update organization
-export function updateOrganization(id: string, updates: Partial<Organization>): Organization | null {
-    const orgs = getAllOrganizations();
-    const index = orgs.findIndex(o => o.id === id);
-
-    if (index === -1) return null;
-
-    orgs[index] = {
-        ...orgs[index],
-        ...updates,
-        updatedAt: new Date().toISOString()
-    };
-
-    saveOrganizations(orgs);
-    return orgs[index];
-}
-
-// Get organization data directory
-export function getOrgDataDir(orgId: string): string {
-    ensureDataDirs();
-    const orgDir = path.join(ORGS_DIR, orgId);
-    if (!fs.existsSync(orgDir)) {
-        fs.mkdirSync(orgDir, { recursive: true });
-    }
-    return orgDir;
-}
-
-// Extract domain from email
 export function extractDomain(email: string): string {
     const parts = email.split('@');
-    if (parts.length !== 2) {
-        throw new Error('Invalid email format');
-    }
+    if (parts.length !== 2) return '';
     return parts[1].toLowerCase();
 }
 
-// Generate organization ID for individual
-export function generateIndividualOrgId(userId: string): string {
-    return `ind-${userId}`;
-}
-
-// Check if user belongs to organization
-export function userBelongsToOrg(userEmail: string, orgId: string): boolean {
-    const org = findOrganizationById(orgId);
-    if (!org) return false;
-
-    if (org.type === 'individual') {
-        // Individual orgs only have one user (checked via orgId match)
-        return true;
-    }
-
-    // Enterprise: check domain match
-    const userDomain = extractDomain(userEmail);
-    return org.domain === userDomain;
-}
-
-// Get or create organization for a new user
-export function getOrCreateOrgForUser(
-    email: string,
-    name: string,
-    type: OrganizationType,
-    userId: string
-): Organization {
-    if (type === 'individual') {
-        const orgId = generateIndividualOrgId(userId);
-        const existing = findOrganizationById(orgId);
-        if (existing) return existing;
-
-        return createOrganization({
-            id: orgId,
-            name: `${name}'s Workspace`,
-            type: 'individual',
-            adminUserId: userId,
-            subscription: { plan: 'free', isTrial: false }
-        });
-    }
-
-    // Enterprise
+export async function getOrCreateOrgForUser(email: string, accountType: 'individual' | 'enterprise'): Promise<{ org: IOrganization, isNew: boolean }> {
+    await ensureDB();
     const domain = extractDomain(email);
-    const existing = findOrganizationByDomain(domain);
-    if (existing) return existing;
 
-    // Create new enterprise org
-    const companyName = domain.split('.')[0]; // e.g., "newgentsoft" from "newgentsoft.com"
-    return createOrganization({
-        id: domain,
-        name: companyName.charAt(0).toUpperCase() + companyName.slice(1), // Capitalize
-        type: 'enterprise',
-        domain: domain,
-        adminUserId: userId,
-        subscription: { plan: 'free', isTrial: false }
-    });
+    let org: IOrganization | null = null;
+    let isNew = false;
+
+    if (accountType === 'individual') {
+        // Individual: Personal Org (e.g., ind-username)
+        const userId = email.split('@')[0];
+        const orgId = `ind-${userId}`;
+
+        org = await getOrganizationById(orgId);
+
+        if (!org) {
+            // Define new org object
+            // Use 'any' cast if strict type checking complains about missing optional fields during creation, 
+            // but ideally strictly match IOrganization
+            const newOrg = {
+                id: orgId,
+                name: `${userId}'s Workspace`,
+                type: 'individual',
+                domain: 'personal',
+                adminUserId: userId,
+                subscription: { plan: 'free', isTrial: false },
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+
+            // Create via Mongoose model directly for better validation
+            await Organization.create(newOrg);
+            org = await getOrganizationById(orgId);
+            isNew = true;
+        }
+    } else {
+        // Enterprise: Domain-based Org
+        const isCommon = COMMON_EMAIL_DOMAINS.includes(domain);
+
+        if (isCommon) {
+            const userId = email.split('@')[0];
+            const orgId = `ind-${userId}`;
+            org = await getOrganizationById(orgId);
+
+            if (!org) {
+                const newOrg = {
+                    id: orgId,
+                    name: `${userId}'s Personal Workspace`,
+                    type: 'individual',
+                    domain: 'personal',
+                    adminUserId: userId,
+                    subscription: { plan: 'free', isTrial: false },
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+                await Organization.create(newOrg);
+                org = await getOrganizationById(orgId);
+                isNew = true;
+            }
+        } else {
+            // Real Enterprise Domain
+            org = await findOrganizationByDomain(domain);
+
+            if (!org) {
+                const companyName = domain.split('.')[0];
+                const newOrg = {
+                    id: domain,
+                    name: companyName.charAt(0).toUpperCase() + companyName.slice(1),
+                    type: 'enterprise',
+                    domain: domain,
+                    adminUserId: null,
+                    subscription: { plan: 'free', isTrial: true, planType: 'trial' },
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+                await Organization.create(newOrg);
+                org = await getOrganizationById(domain);
+                isNew = true;
+            }
+        }
+    }
+
+    if (!org) throw new Error("Failed to create org");
+
+    return { org, isNew };
 }
 
 // Update organization subscription
-export function updateOrgSubscription(
+export async function updateOrgSubscription(
     orgId: string,
     subscription: Partial<Subscription>
-): Organization | null {
-    const org = findOrganizationById(orgId);
+): Promise<IOrganization | null> {
+    const org = await getOrganizationById(orgId);
     if (!org) return null;
 
-    return updateOrganization(orgId, {
-        subscription: { ...org.subscription, ...subscription }
-    });
+    // Merge existing subscription with updates
+    // Use 'any' to avoid strict Partial<> issues if needed, but clean TS is better
+    const currentSub = (org as any).subscription || {};
+    const updatedSubscription = { ...currentSub, ...subscription };
+
+    await updateOrganization(orgId, { subscription: updatedSubscription } as any);
+
+    return getOrganizationById(orgId);
 }

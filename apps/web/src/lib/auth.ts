@@ -22,6 +22,7 @@ export interface User {
     name: string;        // Full name
     email: string;
     password?: string; // Optional for now to support existing users, but required for new ones
+    googleId?: string; // For Google Login
     role: 'admin' | 'user';
     status: 'pending' | 'approved' | 'rejected';
     accountType: 'individual' | 'enterprise'; // Multi-tenant mode

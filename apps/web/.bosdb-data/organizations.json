@@ -231,10 +231,29 @@
     "type": "individual",
     "adminUserId": "nji",
     "subscription": {
-      "plan": "free",
-      "isTrial": false
+      "plan": "pro",
+      "isTrial": false,
+      "planType": "yearly",
+      "activatedAt": "2025-12-28T07:02:26.550Z",
+      "expiresAt": "2026-12-28T07:02:26.550Z"
     },
     "createdAt": "2025-12-28T06:46:50.848Z",
-    "updatedAt": "2025-12-28T06:46:50.848Z"
+    "updatedAt": "2025-12-28T07:02:26.552Z"
+  },
+  {
+    "id": "oyo.com",
+    "name": "Oyo",
+    "type": "enterprise",
+    "domain": "oyo.com",
+    "subscription": {
+      "plan": "pro",
+      "isTrial": false,
+      "planType": "monthly",
+      "activatedAt": "2025-12-28T07:19:21.682Z",
+      "expiresAt": "2026-01-27T07:19:21.682Z"
+    },
+    "createdAt": "2025-12-28T07:17:13.713Z",
+    "updatedAt": "2025-12-28T07:19:21.687Z",
+    "adminUserId": "asdf"
   }
 ]

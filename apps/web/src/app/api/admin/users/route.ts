@@ -1,6 +1,7 @@
+
 import { NextRequest, NextResponse } from 'next/server';
-import { getUsers, createUser, findUserByEmail, getUsersByOrg } from '@/lib/users-store';
-import { requireAdmin, verifyAdminRole } from '@/middleware/requireAdmin';
+import { getUsers, createUser, findUserByEmail, getUsersByOrg, updateUser, findUserById } from '@/lib/users-store';
+import { hashPassword } from '@/lib/auth';
 
 // GET /api/admin/users - List users from admin's organization only
 export async function GET(request: NextRequest) {
@@ -18,13 +19,13 @@ export async function GET(request: NextRequest) {
         }
 
         // Find the admin user to get their organization
-        const adminUser = findUserByEmail(userEmail);
+        const adminUser = await findUserByEmail(userEmail);
         if (!adminUser || !adminUser.organizationId) {
             return NextResponse.json({ error: 'Admin user not found' }, { status: 404 });
         }
 
         // Get users from the same organization only
-        const orgUsers = getUsersByOrg(adminUser.organizationId);
+        const orgUsers = await getUsersByOrg(adminUser.organizationId);
 
         // Return users without sensitive data
         const sanitizedUsers = orgUsers.map(u => ({
@@ -47,8 +48,6 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/users - Create a new user in admin's organization
 export async function POST(request: NextRequest) {
     try {
-        // requireAdmin(request);
-
         const body = await request.json();
         const { name, email, password, role } = body;
 
@@ -58,7 +57,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Admin email required' }, { status: 401 });
         }
 
-        const adminUser = findUserByEmail(adminEmail);
+        const adminUser = await findUserByEmail(adminEmail);
         if (!adminUser || !adminUser.organizationId) {
             return NextResponse.json({ error: 'Admin user not found' }, { status: 404 });
         }
@@ -68,15 +67,17 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if user exists
-        if (findUserByEmail(email)) {
+        if (await findUserByEmail(email)) {
             return NextResponse.json({ error: 'User with this email already exists' }, { status: 409 });
         }
+
+        const hashedPassword = await hashPassword(password);
 
         const newUser = {
             id: email.split('@')[0].replace(/[^a-zA-Z0-9]/g, ''), // Generate ID from email
             name,
             email,
-            password, // In real app, hash this!
+            password: hashedPassword,
             role: role as 'admin' | 'user',
             status: 'approved' as const, // Admin-created users are auto-approved
             accountType: adminUser.accountType, // Same as admin
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
             createdAt: new Date()
         };
 
-        createUser(newUser);
+        await createUser(newUser);
 
         return NextResponse.json({
             success: true,
@@ -105,7 +106,6 @@ export async function POST(request: NextRequest) {
 // PATCH /api/admin/users - Update user status
 export async function PATCH(request: NextRequest) {
     try {
-        // requireAdmin(request);
         const body = await request.json();
         const { userId, status } = body;
 
@@ -113,20 +113,12 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid parameters' }, { status: 400 });
         }
 
-        const users = getUsers();
-        const userIndex = users.findIndex(u => u.id === userId);
-
-        if (userIndex === -1) {
+        const user = await findUserById(userId);
+        if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        // Update status
-        users[userIndex].status = status;
-
-        // Save back (using internal store function if available, or just mocking it here if we had direct access)
-        // Since we don't have update function exported in store.ts that accepts array, we need to use updateUser
-        const { updateUser } = await import('@/lib/users-store');
-        updateUser(userId, { status });
+        await updateUser(userId, { status });
 
         return NextResponse.json({ success: true });
     } catch (error: any) {

@@ -1,151 +1,92 @@
-import fs from 'fs';
-import path from 'path';
-import { User } from './auth';
-import { getOrgDataDir } from './organization';
 
-// Get organization-specific users file path
-function getUsersFilePath(orgId: string): string {
-    const orgDir = getOrgDataDir(orgId);
-    return path.join(orgDir, 'users.json');
+import connectDB from './db';
+import User, { IUser } from '@/models/User';
+
+// Export IUser as User for compatibility
+export type { IUser as User };
+
+// Helper to ensure DB is connected
+async function ensureDB() {
+    await connectDB();
 }
 
 // Get all users from an organization
-export function getUsersByOrg(orgId: string): User[] {
-    try {
-        const filePath = getUsersFilePath(orgId);
-        if (fs.existsSync(filePath)) {
-            const data = fs.readFileSync(filePath, 'utf-8');
-            return JSON.parse(data);
-        }
-    } catch (error) {
-        console.error(`[UsersStore] Failed to load users for org ${orgId}:`, error);
-    }
-    return [];
+export async function getUsersByOrg(orgId: string): Promise<IUser[]> {
+    await ensureDB();
+    return User.find({ organizationId: orgId }).lean();
 }
 
-// Get ALL users (across all organizations) - for migration/admin purposes
-export function getUsers(): User[] {
-    // For backward compatibility, try to load from old location first
-    const OLD_USERS_FILE = path.join(process.cwd(), '.bosdb-users.json');
-    try {
-        if (fs.existsSync(OLD_USERS_FILE)) {
-            const data = fs.readFileSync(OLD_USERS_FILE, 'utf-8');
-            const users = JSON.parse(data);
-            console.log('[UsersStore] Loaded users from legacy file');
-            return users;
-        }
-    } catch (error) {
-        console.error('[UsersStore] Failed to load legacy users:', error);
-    }
-
-    // Return default admin if no users exist
-    return [{
-        id: 'admin',
-        name: 'Administrator',
-        email: 'admin@bosdb.com',
-        role: 'admin',
-        status: 'approved',
-        accountType: 'individual',
-        organizationId: 'ind-admin',
-        createdAt: new Date(),
-        password: 'admin'
-    } as any];
+// Get ALL users (across all organizations)
+export async function getUsers(): Promise<IUser[]> {
+    await ensureDB();
+    const users = await User.find({}).lean();
+    return users as IUser[];
 }
 
-// Save users for an organization
-function saveUsersByOrg(orgId: string, users: User[]) {
-    try {
-        const filePath = getUsersFilePath(orgId);
-        fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
-    } catch (error) {
-        console.error(`[UsersStore] Failed to save users for org ${orgId}:`, error);
-    }
-}
-
-// Save users to old location (for backward compatibility during migration)
-export function saveUsers(users: User[]) {
-    const OLD_USERS_FILE = path.join(process.cwd(), '.bosdb-users.json');
-    try {
-        fs.writeFileSync(OLD_USERS_FILE, JSON.stringify(users, null, 2));
-    } catch (error) {
-        console.error('[UsersStore] Failed to save users:', error);
-    }
-}
-
-// Find user by ID (searches all orgs from legacy file)
-export function findUserById(id: string): User | undefined {
-    return getUsers().find(u => u.id === id);
+// Find user by ID
+export async function findUserById(id: string): Promise<IUser | null> {
+    await ensureDB();
+    const user = await User.findOne({ id }).lean();
+    return user as IUser | null;
 }
 
 // Find user by ID within a specific organization
-export function findUserByIdInOrg(id: string, orgId: string): User | undefined {
-    return getUsersByOrg(orgId).find(u => u.id === id);
+export async function findUserByIdInOrg(id: string, orgId: string): Promise<IUser | null> {
+    await ensureDB();
+    const user = await User.findOne({ id, organizationId: orgId }).lean();
+    return user as IUser | null;
 }
 
-// Find user by email (searches all orgs from legacy file)
-export function findUserByEmail(email: string): User | undefined {
-    return getUsers().find(u => u.email === email);
+// Find user by email
+export async function findUserByEmail(email: string): Promise<IUser | null> {
+    await ensureDB();
+    const user = await User.findOne({ email }).lean();
+    return user as IUser | null;
 }
 
 // Find user by email within a specific organization
-export function findUserByEmailInOrg(email: string, orgId: string): User | undefined {
-    return getUsersByOrg(orgId).find(u => u.email === email);
+export async function findUserByEmailInOrg(email: string, orgId: string): Promise<IUser | null> {
+    await ensureDB();
+    const user = await User.findOne({ email, organizationId: orgId }).lean();
+    return user as IUser | null;
 }
 
-// Create new user in their organization
-export function createUser(user: User) {
+// Create new user
+export async function createUser(user: Partial<IUser>): Promise<IUser> {
+    await ensureDB();
     if (!user.organizationId) {
         throw new Error('User must have an organizationId');
     }
 
-    // Check in the user's org
-    const orgUsers = getUsersByOrg(user.organizationId);
-    if (orgUsers.some(u => u.id === user.id || u.email === user.email)) {
-        throw new Error('User already exists in organization');
+    // Check if user exists (by email mostly, id might be duplicate across orgs if we used simple usernames, but schema says id is required/unique-ish)
+    // Schema has 'id' as field.
+    const existing = await User.findOne({
+        $or: [{ email: user.email }, { id: user.id }]
+    });
+
+    if (existing) {
+        // If it's the exact same user, return it? No, throw error for create.
+        throw new Error('User already exists');
     }
 
-    orgUsers.push(user);
-    saveUsersByOrg(user.organizationId, orgUsers);
-
-    // Also save to legacy file for backward compatibility
-    const allUsers = getUsers();
-    allUsers.push(user);
-    saveUsers(allUsers);
-
-    return user;
+    const newUser = await User.create(user);
+    return newUser.toObject();
 }
 
-// Update user in their organization
-export function updateUser(id: string, updates: Partial<User>) {
-    const allUsers = getUsers();
-    const userIndex = allUsers.findIndex(u => u.id === id);
+// Update user
+export async function updateUser(id: string, updates: Partial<IUser>): Promise<IUser | null> {
+    await ensureDB();
+    const updated = await User.findOneAndUpdate(
+        { id },
+        { $set: updates },
+        { new: true }
+    ).lean();
 
-    if (userIndex === -1) {
-        throw new Error('User not found');
-    }
+    return updated as IUser | null;
+}
 
-    const user = allUsers[userIndex];
-    const orgId = user.organizationId;
-
-    if (!orgId) {
-        // Legacy user without org - just update in main file
-        allUsers[userIndex] = { ...user, ...updates };
-        saveUsers(allUsers);
-        return allUsers[userIndex];
-    }
-
-    // Update in organization-specific file
-    const orgUsers = getUsersByOrg(orgId);
-    const orgUserIndex = orgUsers.findIndex(u => u.id === id);
-
-    if (orgUserIndex !== -1) {
-        orgUsers[orgUserIndex] = { ...orgUsers[orgUserIndex], ...updates };
-        saveUsersByOrg(orgId, orgUsers);
-    }
-
-    // Also update in legacy file
-    allUsers[userIndex] = { ...user, ...updates };
-    saveUsers(allUsers);
-
-    return allUsers[userIndex];
+// For migration compatibility
+export async function saveUsers(users: IUser[]) {
+    // No-op or bulk write if needed
+    console.warn('saveUsers called - no-op for MongoDB version');
 }

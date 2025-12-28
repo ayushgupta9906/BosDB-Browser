@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findOrganizationById, updateOrgSubscription, createOrganization } from '@/lib/organization';
+import { findOrganizationById, updateOrgSubscription, saveOrganization, IOrganization } from '@/lib/organization';
 import { findUserById } from '@/lib/users-store';
 import { COUPONS } from '@/lib/subscription';
 
@@ -17,18 +17,20 @@ export async function GET(request: NextRequest) {
             });
         }
 
-        let org = findOrganizationById(orgId);
+        let org = await findOrganizationById(orgId);
 
         // Auto-create default admin org if missing
         if (!org && orgId === 'ind-admin') {
             console.log('[Subscription API] Auto-creating missing default admin org');
-            org = createOrganization({
+            const adminOrg: any = {
                 id: 'ind-admin',
                 name: 'Administrator Workspace',
                 type: 'individual',
                 adminUserId: 'admin',
                 subscription: { plan: 'free', isTrial: false }
-            });
+            };
+            await saveOrganization(adminOrg);
+            org = adminOrg;
         }
 
         if (!org) {
@@ -77,18 +79,20 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Organization ID required' }, { status: 400 });
         }
 
-        let org = findOrganizationById(orgId);
+        let org = await findOrganizationById(orgId);
 
         // Auto-create default admin org if missing
         if (!org && orgId === 'ind-admin') {
             console.log('[Subscription API] Auto-creating missing default admin org during upgrade');
-            org = createOrganization({
+            const adminOrg: any = {
                 id: 'ind-admin',
                 name: 'Administrator Workspace',
                 type: 'individual',
                 adminUserId: 'admin',
                 subscription: { plan: 'free', isTrial: false }
-            });
+            };
+            await saveOrganization(adminOrg);
+            org = adminOrg;
         }
 
         if (!org) {
@@ -142,7 +146,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Update organization subscription
-        const updated = updateOrgSubscription(orgId, {
+        const updated = await updateOrgSubscription(orgId, {
             plan: plan.startsWith('enterprise') ? 'enterprise' : 'pro',
             planType: plan === 'pro_trial' ? 'trial' : (plan.includes('monthly') ? 'monthly' : 'yearly'),
             isTrial: plan === 'pro_trial',

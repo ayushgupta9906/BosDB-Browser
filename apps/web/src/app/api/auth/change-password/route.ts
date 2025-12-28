@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
         }
 
-        const user = findUserById(userId);
+        const user = await findUserById(userId);
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
         // Hash and update
         const hashedPassword = await hashPassword(newPassword);
-        updateUser(userId, { password: hashedPassword });
+        await updateUser(userId, { password: hashedPassword });
 
         return NextResponse.json({ success: true, message: 'Password changed successfully' });
     } catch (error: any) {

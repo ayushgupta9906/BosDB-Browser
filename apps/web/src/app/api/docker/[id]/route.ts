@@ -4,10 +4,10 @@ import { startDatabase, stopDatabase, removeDatabase } from '@/lib/docker-manage
 // POST /api/docker/[id]/start - Start a Docker database
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         // Get current user
         const userEmail = request.headers.get('x-user-email');
@@ -16,7 +16,7 @@ export async function POST(
         }
 
         const { findUserByEmail } = await import('@/lib/users-store');
-        const user = findUserByEmail(userEmail);
+        const user = await findUserByEmail(userEmail);
         if (!user || !user.organizationId) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
@@ -44,10 +44,10 @@ export async function POST(
 // DELETE /api/docker/[id] - Remove a Docker database
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         const userEmail = request.headers.get('x-user-email');
         if (!userEmail) {
@@ -55,7 +55,7 @@ export async function DELETE(
         }
 
         const { findUserByEmail } = await import('@/lib/users-store');
-        const user = findUserByEmail(userEmail);
+        const user = await findUserByEmail(userEmail);
         if (!user || !user.organizationId) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }

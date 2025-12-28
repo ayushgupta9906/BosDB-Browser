@@ -3,7 +3,17 @@
 
 import fs from 'fs';
 import path from 'path';
-import { getOrgDataDir } from './organization';
+
+const DATA_DIR = path.join(process.cwd(), '.bosdb-data');
+const ORGS_DIR = path.join(DATA_DIR, 'orgs');
+
+function getOrgDataDir(orgId: string): string {
+    const orgDir = path.join(ORGS_DIR, orgId);
+    if (!fs.existsSync(orgDir)) {
+        fs.mkdirSync(orgDir, { recursive: true });
+    }
+    return orgDir;
+}
 
 // Legacy file (for backward compatibility)
 const LEGACY_STORAGE_FILE = path.join(process.cwd(), '.bosdb-connections.json');

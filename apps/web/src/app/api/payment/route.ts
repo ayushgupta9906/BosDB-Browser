@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Find user
-        const user = findUserById(userId);
+        const user = await findUserById(userId);
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Update user with Pro subscription
-        const updatedUser = updateUser(userId, {
+        const updatedUser = await updateUser(userId, {
             subscription: {
                 plan: 'pro',
                 isTrial: plan === 'pro_trial',

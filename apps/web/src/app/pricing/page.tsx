@@ -36,6 +36,13 @@ export default function PricingPage() {
                 setSubscriptionStatus(status);
             });
         }
+
+        // Lock view mode based on account type
+        if (currentUser?.accountType === 'individual') {
+            setViewMode('individual');
+        } else if (currentUser?.accountType === 'enterprise') {
+            setViewMode('enterprise');
+        }
     }, [router]);
 
     const systemIsPro = subscriptionStatus.isPro;
@@ -207,23 +214,25 @@ export default function PricingPage() {
                     )}
                 </div>
 
-                {/* Toggle */}
-                <div className="flex justify-center mb-12">
-                    <div className="bg-white/10 p-1 rounded-xl flex">
-                        <button
-                            onClick={() => setViewMode('individual')}
-                            className={`px-6 py-2 rounded-lg text-sm font-semibold transition ${viewMode === 'individual' ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-                        >
-                            Individual
-                        </button>
-                        <button
-                            onClick={() => setViewMode('enterprise')}
-                            className={`px-6 py-2 rounded-lg text-sm font-semibold transition ${viewMode === 'enterprise' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
-                        >
-                            Enterprise
-                        </button>
+                {/* Toggle - Only show if not logged in */}
+                {!user && (
+                    <div className="flex justify-center mb-12">
+                        <div className="bg-white/10 p-1 rounded-xl flex">
+                            <button
+                                onClick={() => setViewMode('individual')}
+                                className={`px-6 py-2 rounded-lg text-sm font-semibold transition ${viewMode === 'individual' ? 'bg-purple-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                            >
+                                Individual
+                            </button>
+                            <button
+                                onClick={() => setViewMode('enterprise')}
+                                className={`px-6 py-2 rounded-lg text-sm font-semibold transition ${viewMode === 'enterprise' ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}
+                            >
+                                Enterprise
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Pricing Cards */}
                 <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16">
