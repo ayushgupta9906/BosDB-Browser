@@ -9,7 +9,7 @@ services:
     region: oregon
     plan: free
     branch: main
-    healthCheckPath: /
+    healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
