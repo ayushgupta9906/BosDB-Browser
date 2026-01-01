@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Editor from '@monaco-editor/react';
 import { useTheme } from 'next-themes';
@@ -205,6 +205,9 @@ function QueryPageContent() {
     // Loading states map: schemaName -> { tables: boolean, procedures: boolean }
     const [loadingResources, setLoadingResources] = useState<Map<string, { tables: boolean; procedures: boolean }>>(new Map());
     const [resourceErrors, setResourceErrors] = useState<Map<string, string>>(new Map());
+
+    // Memoize columns to prevent infinite loop in ResultsToolbar
+    const columns = useMemo(() => result ? result.fields.map(f => f.name) : [], [result]);
 
     const updateLoading = (schema: string, type: 'tables' | 'procedures', isLoading: boolean) => {
         setLoadingResources(prev => {
@@ -755,7 +758,7 @@ function QueryPageContent() {
                                     <div className="border border-border rounded-lg overflow-hidden">
                                         <ResultsToolbar
                                             data={result.rows}
-                                            columns={result.fields.map(f => f.name)}
+                                            columns={columns}
                                             onFilteredDataChange={setFilteredResults}
                                             onExport={() => setShowExportModal(true)}
                                         />
@@ -837,7 +840,7 @@ function QueryPageContent() {
             {showExportModal && result && (
                 <ExportModal
                     data={filteredResults.length > 0 ? filteredResults : result.rows}
-                    columns={result.fields.map(f => f.name)}
+                    columns={columns}
                     tableName={`query-result-${Date.now()}`}
                     onClose={() => setShowExportModal(false)}
                 />

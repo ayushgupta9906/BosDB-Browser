@@ -156,3 +156,7 @@ export const adapterInstances = new Proxy({} as Map<string, any>, {
         return true;
     }
 });
+
+export async function getConnection(connectionId: string): Promise<any> {
+    return getConnections().get(connectionId);
+}
