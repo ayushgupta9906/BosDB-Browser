@@ -9,7 +9,7 @@ const nextConfig = {
         pagesBufferLength: 5,
     },
     experimental: {
-        instrumentationHook: true,
+        instrumentationHook: false,
         serverComponentsExternalPackages: [
             'pg',
             'mysql2',
