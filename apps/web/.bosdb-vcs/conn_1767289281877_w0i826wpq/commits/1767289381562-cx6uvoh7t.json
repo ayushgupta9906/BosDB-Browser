@@ -1,0 +1,29 @@
+{
+  "id": "1767289381562-cx6uvoh7t",
+  "message": "UPDATE students",
+  "author": {
+    "name": "testy",
+    "email": "testy@gmail.com",
+    "userId": "testmaruti",
+    "timestamp": "2026-01-01T17:43:01.561Z"
+  },
+  "timestamp": "2026-01-01T17:43:01.562Z",
+  "parentIds": [
+    "1767289366260-qy9kfnc9t"
+  ],
+  "treeId": "1767289381562-cx6uvoh7t",
+  "changes": [
+    {
+      "type": "DATA",
+      "operation": "UPDATE",
+      "target": "students",
+      "tableName": "students",
+      "description": "Update 1 row(s) in students",
+      "query": "UPDATE students\r\nSET email = 'alice.j.new@example.com'\r\nWHERE student_id = 1;",
+      "affectedRows": 1,
+      "timestamp": "2026-01-01T17:42:03.841Z",
+      "id": "change-1767289323841-chsin3l5g"
+    }
+  ],
+  "branchName": "main"
+}

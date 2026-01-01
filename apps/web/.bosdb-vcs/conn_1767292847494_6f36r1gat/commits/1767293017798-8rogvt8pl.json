@@ -1,0 +1,29 @@
+{
+  "id": "1767293017798-8rogvt8pl",
+  "message": "Revert: Revert: UPDATE countries (17672929) (17672930)",
+  "author": {
+    "name": "testy",
+    "email": "testy@gmail.com",
+    "userId": "testmaruti",
+    "timestamp": "2026-01-01T18:43:37.797Z"
+  },
+  "timestamp": "2026-01-01T18:43:37.798Z",
+  "parentIds": [
+    "1767293000746-7pfk684zg"
+  ],
+  "treeId": "1767293017798-8rogvt8pl",
+  "changes": [
+    {
+      "type": "DATA",
+      "operation": "ROLLBACK",
+      "target": "countries",
+      "tableName": "countries",
+      "description": "Undone: Undone: Update 1 row(s) in countries",
+      "query": "UPDATE countries\r\nSET country_name = 'New Country Name'\r\nWHERE country_code = 'CA'",
+      "affectedRows": 1,
+      "timestamp": "2026-01-01T18:42:02.446Z",
+      "id": "change-1767292922446-3snpmd1tw"
+    }
+  ],
+  "branchName": "main"
+}

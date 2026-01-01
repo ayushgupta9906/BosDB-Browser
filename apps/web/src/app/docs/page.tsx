@@ -68,131 +68,116 @@ export default function DocumentationPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-4 bg-background rounded-lg border border-border">
-                            <h3 className="font-semibold mb-2">PostgreSQL</h3>
+                            <h3 className="font-semibold mb-2">Relational (SQL)</h3>
                             <p className="text-sm text-muted-foreground mb-2">
-                                Full SQL support with advanced features
+                                PostgreSQL, MySQL, MariaDB, Oracle, SQLite, Firebird, CUBRID, H2, Derby, DB2, Informix, Sybase, HANA, Ingres, Interbase, HSQLDB, Access
                             </p>
-                            <code className="text-xs bg-accent px-2 py-1 rounded">Default Port: 5432</code>
+                            <code className="text-xs bg-accent px-2 py-1 rounded">Standard SQL & JDBC support</code>
                         </div>
 
                         <div className="p-4 bg-background rounded-lg border border-border">
-                            <h3 className="font-semibold mb-2">MySQL</h3>
+                            <h3 className="font-semibold mb-2">NoSQL & Key-Value</h3>
                             <p className="text-sm text-muted-foreground mb-2">
-                                Popular relational database
+                                MongoDB, Redis, Couchbase, CouchDB, OrientDB, CosmosDB
                             </p>
-                            <code className="text-xs bg-accent px-2 py-1 rounded">Default Port: 3306</code>
+                            <code className="text-xs bg-accent px-2 py-1 rounded">JSON & Multi-model support</code>
                         </div>
 
                         <div className="p-4 bg-background rounded-lg border border-border">
-                            <h3 className="font-semibold mb-2">MariaDB</h3>
+                            <h3 className="font-semibold mb-2">Search & Analytics</h3>
                             <p className="text-sm text-muted-foreground mb-2">
-                                MySQL-compatible fork
+                                Elasticsearch, Solr, Meilisearch, DuckDB, Prometheus, InfluxDB, ClickHouse
                             </p>
-                            <code className="text-xs bg-accent px-2 py-1 rounded">Default Port: 3306</code>
+                            <code className="text-xs bg-accent px-2 py-1 rounded">Analytics & Time-series</code>
                         </div>
 
                         <div className="p-4 bg-background rounded-lg border border-border">
-                            <h3 className="font-semibold mb-2">MongoDB</h3>
+                            <h3 className="font-semibold mb-2">Docker Provisioning</h3>
                             <p className="text-sm text-muted-foreground mb-2">
-                                Document-oriented NoSQL database
+                                Instant database spin-up using Docker. Supporting Oracle, Postgres, MySQL, and 20+ others.
                             </p>
-                            <code className="text-xs bg-accent px-2 py-1 rounded">Default Port: 27017</code>
-                        </div>
-
-                        <div className="p-4 bg-background rounded-lg border border-border">
-                            <h3 className="font-semibold mb-2">Redis</h3>
-                            <p className="text-sm text-muted-foreground mb-2">
-                                In-memory key-value store
-                            </p>
-                            <code className="text-xs bg-accent px-2 py-1 rounded">Default Port: 6379</code>
+                            <code className="text-xs bg-accent px-2 py-1 rounded">One-click deployment</code>
                         </div>
                     </div>
                 </div>
 
-                {/* Query Examples */}
+                {/* Pro Tips & Shortcuts */}
                 <div className="bg-card border border-border rounded-lg p-6 mb-6">
                     <div className="flex items-center gap-2 mb-4">
-                        <Code className="w-6 h-6 text-primary" />
-                        <h2 className="text-2xl font-semibold">Query Examples</h2>
+                        <Zap className="w-6 h-6 text-amber-500" />
+                        <h2 className="text-2xl font-semibold">Pro Tips & Shortcuts</h2>
                     </div>
 
                     <div className="space-y-4">
-                        <div>
-                            <h3 className="font-semibold mb-2">PostgreSQL / MySQL / MariaDB</h3>
-                            <pre className="bg-background p-4 rounded-lg border border-border overflow-x-auto text-sm">
-                                {`SELECT * FROM users WHERE active = true LIMIT 10;
-
-CREATE TABLE products (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100),
-    price DECIMAL(10,2)
-);`}
-                            </pre>
+                        <div className="flex items-center justify-between p-3 bg-background rounded-lg border border-border">
+                            <span className="text-sm font-medium">Execute Query</span>
+                            <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono border border-border">Ctrl + E</kbd>
                         </div>
-
-                        <div>
-                            <h3 className="font-semibold mb-2">MongoDB (JSON Format)</h3>
-                            <pre className="bg-background p-4 rounded-lg border border-border overflow-x-auto text-sm">
-                                {`{
-  "find": "users",
-  "filter": {"age": {"$gt": 18}},
-  "limit": 10
-}`}
-                            </pre>
+                        <div className="flex items-center justify-between p-3 bg-background rounded-lg border border-border">
+                            <span className="text-sm font-medium">Format SQL</span>
+                            <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono border border-border">Ctrl + Shift + F</kbd>
                         </div>
-
-                        <div>
-                            <h3 className="font-semibold mb-2">Redis (JSON Format)</h3>
-                            <pre className="bg-background p-4 rounded-lg border border-border overflow-x-auto text-sm">
-                                {`{
-  "command": "GET",
-  "args": ["mykey"]
-}
-
-{
-  "command": "KEYS",
-  "args": ["*"]
-}`}
-                            </pre>
+                        <div className="p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg">
+                            <p className="text-sm text-blue-600 dark:text-blue-400">
+                                <strong>Multi-Query Support:</strong> Separate multiple SQL queries with semicolons (;) to execute them sequentially and view all result sets at once.
+                            </p>
+                        </div>
+                        <div className="p-3 bg-green-500/5 border border-green-500/20 rounded-lg">
+                            <p className="text-sm text-green-600 dark:text-green-400">
+                                <strong>Provisioning Cancellation:</strong> If a database is taking too long to pull, click the red cross (✕) in the provisioning modal to cancel immediately.
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                {/* Features */}
-                <div className="bg-card border border-border rounded-lg p-6">
+                {/* Version Control */}
+                <div className="bg-card border border-border rounded-lg p-6 mb-6">
                     <div className="flex items-center gap-2 mb-4">
                         <GitBranch className="w-6 h-6 text-primary" />
-                        <h2 className="text-2xl font-semibold">Features</h2>
+                        <h2 className="text-2xl font-semibold">Version Control & Comparison</h2>
                     </div>
+                    <p className="text-muted-foreground mb-4">
+                        BosDB tracks all schema and data changes made through the editor. Use the <strong>VCS</strong> tab to:
+                    </p>
+                    <ul className="space-y-2 text-sm text-muted-foreground list-disc pl-5">
+                        <li>View pending changes before committing.</li>
+                        <li><strong>Compare</strong> current state with previous revisions.</li>
+                        <li>Generate "Inverse SQL" to undo accidental changes.</li>
+                        <li>Branch and fork database states for experimentation.</li>
+                    </ul>
+                </div>
 
-                    <ul className="space-y-2 text-muted-foreground">
+                {/* Features Summary */}
+                <div className="bg-card border border-border rounded-lg p-6">
+                    <h2 className="text-2xl font-semibold mb-4">Core Features</h2>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-muted-foreground">
                         <li className="flex items-start gap-2">
                             <span className="text-primary">✓</span>
-                            <span>Multi-database support (PostgreSQL, MySQL, MariaDB, MongoDB, Redis)</span>
+                            <span>Universal Database Adapter (30+ DBs)</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-primary">✓</span>
-                            <span>Query history with automatic tracking</span>
+                            <span>Git-like Version Control for Data</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-primary">✓</span>
-                            <span>Saved queries for quick access</span>
+                            <span>Smart SQL Syntax Validation</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-primary">✓</span>
-                            <span>Schema explorer with table browsing</span>
+                            <span>Visual Table Designer & Importer</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-primary">✓</span>
-                            <span>Syntax validation and helpful warnings</span>
+                            <span>AI-Powered SQL Assistant</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-primary">✓</span>
-                            <span>Dark/Light mode support</span>
+                            <span>Direct Data Editing in Results</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <span className="text-primary">✓</span>
-                            <span>CSV export for query results</span>
+                            <span>Encrypted Connection Persistence</span>
                         </li>
                     </ul>
                 </div>

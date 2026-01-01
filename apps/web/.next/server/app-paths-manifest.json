@@ -1,0 +1,14 @@
+{
+  "/dashboard/page": "app/dashboard/page.js",
+  "/version-control/page": "app/version-control/page.js",
+  "/api/connections/route": "app/api/connections/route.js",
+  "/page": "app/page.js",
+  "/api/vcs/rollback/route": "app/api/vcs/rollback/route.js",
+  "/api/subscription/route": "app/api/subscription/route.js",
+  "/query/page": "app/query/page.js",
+  "/api/auth/route": "app/api/auth/route.js",
+  "/login/page": "app/login/page.js",
+  "/api/schema/route": "app/api/schema/route.js",
+  "/api/vcs/pending/route": "app/api/vcs/pending/route.js",
+  "/api/query/route": "app/api/query/route.js"
+}

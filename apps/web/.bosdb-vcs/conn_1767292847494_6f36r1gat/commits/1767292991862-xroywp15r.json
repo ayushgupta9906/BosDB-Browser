@@ -1,0 +1,27 @@
+{
+  "id": "1767292991862-xroywp15r",
+  "message": "UPDATE countries",
+  "author": {
+    "name": "testy",
+    "email": "testy@gmail.com",
+    "userId": "testmaruti",
+    "timestamp": "2026-01-01T18:43:11.861Z"
+  },
+  "timestamp": "2026-01-01T18:43:11.862Z",
+  "parentIds": [],
+  "treeId": "1767292991862-xroywp15r",
+  "changes": [
+    {
+      "type": "DATA",
+      "operation": "UPDATE",
+      "target": "countries",
+      "tableName": "countries",
+      "description": "Update 1 row(s) in countries",
+      "query": "UPDATE countries\r\nSET country_name = 'New Country Name'\r\nWHERE country_code = 'CA'",
+      "affectedRows": 1,
+      "timestamp": "2026-01-01T18:42:02.446Z",
+      "id": "change-1767292922446-3snpmd1tw"
+    }
+  ],
+  "branchName": "main"
+}

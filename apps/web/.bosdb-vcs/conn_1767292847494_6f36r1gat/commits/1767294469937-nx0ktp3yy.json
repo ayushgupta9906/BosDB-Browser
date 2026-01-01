@@ -1,0 +1,29 @@
+{
+  "id": "1767294469937-nx0ktp3yy",
+  "message": "Revert: UPDATE players (17672944)",
+  "author": {
+    "name": "testy",
+    "email": "testy@gmail.com",
+    "userId": "testmaruti",
+    "timestamp": "2026-01-01T19:07:49.936Z"
+  },
+  "timestamp": "2026-01-01T19:07:49.937Z",
+  "parentIds": [
+    "1767294453614-j880rqrq8"
+  ],
+  "treeId": "1767294469937-nx0ktp3yy",
+  "changes": [
+    {
+      "type": "DATA",
+      "operation": "ROLLBACK",
+      "target": "players",
+      "tableName": "players",
+      "description": "Undone: Update 1 row(s) in players",
+      "query": "UPDATE players\r\nSET name = 'Ayush Gupta',\r\n    email = 'ayush.gupta@example.com'\r\nWHERE player_id = 1",
+      "affectedRows": 1,
+      "timestamp": "2026-01-01T19:06:49.228Z",
+      "id": "change-1767294409228-sgtltfwtz"
+    }
+  ],
+  "branchName": "main"
+}

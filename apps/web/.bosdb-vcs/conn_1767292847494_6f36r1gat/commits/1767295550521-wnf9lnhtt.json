@@ -1,0 +1,30 @@
+{
+  "id": "1767295550521-wnf9lnhtt",
+  "message": "UPDATE players",
+  "author": {
+    "name": "testy",
+    "email": "testy@gmail.com",
+    "userId": "testmaruti",
+    "timestamp": "2026-01-01T19:25:50.520Z"
+  },
+  "timestamp": "2026-01-01T19:25:50.521Z",
+  "parentIds": [
+    "1767295468490-gyzkmf37w"
+  ],
+  "treeId": "1767295550521-wnf9lnhtt",
+  "changes": [
+    {
+      "type": "DATA",
+      "operation": "UPDATE",
+      "target": "players",
+      "tableName": "players",
+      "description": "Update 1 row(s) in players",
+      "query": "UPDATE players\r\nSET name = 'Ayush'\r\nWHERE email = 'rohit@example.com'",
+      "affectedRows": 1,
+      "oldValues": [],
+      "timestamp": "2026-01-01T19:25:24.493Z",
+      "id": "change-1767295524493-bpi41i1bt"
+    }
+  ],
+  "branchName": "main"
+}

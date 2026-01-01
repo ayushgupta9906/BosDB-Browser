@@ -1,0 +1,26 @@
+{
+  "id": "1767288573110-j2leuellz",
+  "message": "CREATE students",
+  "author": {
+    "name": "testy",
+    "email": "testy@gmail.com",
+    "userId": "testmaruti",
+    "timestamp": "2026-01-01T17:29:33.110Z"
+  },
+  "timestamp": "2026-01-01T17:29:33.110Z",
+  "parentIds": [],
+  "treeId": "1767288573110-j2leuellz",
+  "changes": [
+    {
+      "type": "SCHEMA",
+      "operation": "CREATE",
+      "target": "students",
+      "tableName": "students",
+      "description": "Create table students",
+      "query": "CREATE TABLE students (\r\n    id INT PRIMARY KEY,\r\n    name VARCHAR(50),\r\n    age INT,\r\n    grade VARCHAR(10)\r\n);",
+      "timestamp": "2026-01-01T17:28:49.224Z",
+      "id": "change-1767288529224-jemcmay9z"
+    }
+  ],
+  "branchName": "main"
+}

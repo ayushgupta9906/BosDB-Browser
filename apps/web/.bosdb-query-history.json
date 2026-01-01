@@ -1,0 +1,1007 @@
+[
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "INSERT INTO students (id, name, age, grade)\r\nVALUES (1, 'Ali', 15, '10th');",
+    "executedAt": "2026-01-01T17:28:55.509Z",
+    "executionTime": 15,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767288535509_uqcue0t4c"
+  },
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM students;",
+    "executedAt": "2026-01-01T17:29:04.759Z",
+    "executionTime": 4,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767288544759_bz55qv1db"
+  },
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "CREATE TABLE users (\r\n    id SERIAL PRIMARY KEY,\r\n    name VARCHAR(50),\r\n    email VARCHAR(100) UNIQUE\r\n);",
+    "executedAt": "2026-01-01T17:38:10.919Z",
+    "executionTime": 86,
+    "rowCount": 0,
+    "success": true,
+    "id": "history_1767289090920_goyl9lwte"
+  },
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "INSERT INTO users (name, email)\r\nVALUES\r\n('Sara', 'sara@example.com'),\r\n('Ahmed', 'ahmed@example.com');",
+    "executedAt": "2026-01-01T17:38:15.774Z",
+    "executionTime": 14,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767289095775_1innrh9rf"
+  },
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE users\r\nSET email = 'newali@example.com'\r\nWHERE name = 'Ali';",
+    "executedAt": "2026-01-01T17:39:18.773Z",
+    "executionTime": 71,
+    "rowCount": 0,
+    "success": true,
+    "id": "history_1767289158773_xfikktl3h"
+  },
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE users\r\nSET name = 'Ali Khan', email = 'alikhan@example.com'\r\nWHERE id = 1;",
+    "executedAt": "2026-01-01T17:39:27.122Z",
+    "executionTime": 10,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767289167122_qc4kt72e9"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "CREATE TABLE students (\r\n    student_id SERIAL PRIMARY KEY,   -- unique ID for each student\r\n    first_name VARCHAR(50) NOT NULL,\r\n    last_name VARCHAR(50) NOT NULL,\r\n    grade INT NOT NULL,              -- grade of the student (1 to 12)\r\n    age INT,\r\n    email VARCHAR(100)\r\n);",
+    "executedAt": "2026-01-01T17:41:36.145Z",
+    "executionTime": 23,
+    "rowCount": 0,
+    "success": true,
+    "id": "history_1767289296146_7xizl2a36"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "INSERT INTO students (first_name, last_name, grade, age, email)\r\nVALUES\r\n('Alice', 'Johnson', 10, 15, 'alice.johnson@example.com'),\r\n('Bob', 'Smith', 12, 17, 'bob.smith@example.com'),\r\n('Charlie', 'Brown', 9, 14, 'charlie.brown@example.com');",
+    "executedAt": "2026-01-01T17:41:42.216Z",
+    "executionTime": 8,
+    "rowCount": 3,
+    "success": true,
+    "id": "history_1767289302216_qtuwjeyuc"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE students\r\nSET email = 'alice.j.new@example.com'\r\nWHERE student_id = 1;",
+    "executedAt": "2026-01-01T17:42:03.819Z",
+    "executionTime": 10,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767289323819_c3yrp9cp2"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "select * from students",
+    "executedAt": "2026-01-01T17:42:24.315Z",
+    "executionTime": 3,
+    "rowCount": 3,
+    "success": true,
+    "id": "history_1767289344315_ig5yc91hh"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "select * from students",
+    "executedAt": "2026-01-01T17:42:38.086Z",
+    "executionTime": 6,
+    "rowCount": 3,
+    "success": true,
+    "id": "history_1767289358087_fabk85hri"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM information_schema.tables LIMIT 10",
+    "executedAt": "2026-01-01T17:57:58.283Z",
+    "executionTime": 135,
+    "rowCount": 10,
+    "success": true,
+    "id": "history_1767290278284_kiaglzkqv"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM information_schema.tables LIMIT 10",
+    "executedAt": "2026-01-01T17:58:06.240Z",
+    "executionTime": 12,
+    "rowCount": 10,
+    "success": true,
+    "id": "history_1767290286242_wc9pgj51q"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM information_schema.tables LIMIT 10",
+    "executedAt": "2026-01-01T17:58:07.853Z",
+    "executionTime": 4,
+    "rowCount": 10,
+    "success": true,
+    "id": "history_1767290287853_jwrqrzsz5"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM information_schema.tables LIMIT 10",
+    "executedAt": "2026-01-01T17:58:08.019Z",
+    "executionTime": 3,
+    "rowCount": 10,
+    "success": true,
+    "id": "history_1767290288019_5ojq1kboa"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM information_schema.tables LIMIT 10",
+    "executedAt": "2026-01-01T18:06:02.270Z",
+    "executionTime": 19,
+    "rowCount": 10,
+    "success": true,
+    "id": "history_1767290762271_lig0qsxke"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "CREATE TABLE Universities (\r\n    id INT PRIMARY KEY,      -- Unique ID for each university\r\n    name VARCHAR(100),       -- Name of the university\r\n    country VARCHAR(50),     -- Country where it is located\r\n    ranking INT              -- Ranking (optional)\r\n)",
+    "executedAt": "2026-01-01T18:06:17.308Z",
+    "executionTime": 98,
+    "rowCount": 0,
+    "success": true,
+    "id": "history_1767290777308_y78fmowjh"
+  },
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM information_schema.tables LIMIT 10",
+    "executedAt": "2026-01-01T18:13:19.211Z",
+    "executionTime": 60,
+    "rowCount": 10,
+    "success": true,
+    "id": "history_1767291199213_6eenstvbc"
+  },
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "CREATE TABLE Universities (\r\n    id INT PRIMARY KEY,      -- Unique ID for each university\r\n    name VARCHAR(100),       -- Name of the university\r\n    country VARCHAR(50),     -- Country where it is located\r\n    ranking INT              -- Ranking (optional)\r\n)",
+    "executedAt": "2026-01-01T18:13:32.295Z",
+    "executionTime": 79,
+    "rowCount": 0,
+    "success": true,
+    "id": "history_1767291212296_xtv68i4vo"
+  },
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "INSERT INTO Universities (id, name, country, ranking)\r\nVALUES\r\n(1, 'Harvard University', 'USA', 1),\r\n(2, 'University of Oxford', 'UK', 2),\r\n(3, 'Stanford University', 'USA', 3)",
+    "executedAt": "2026-01-01T18:13:50.389Z",
+    "executionTime": 17,
+    "rowCount": 3,
+    "success": true,
+    "id": "history_1767291230389_5oa81iyrv"
+  },
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE Universities\r\nSET ranking = 4\r\nWHERE name = 'Stanford University'",
+    "executedAt": "2026-01-01T18:14:55.887Z",
+    "executionTime": 1857,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767291295887_3er0xq8ko"
+  },
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE Universities\r\nSET ranking = 4\r\nWHERE name = 'Stanford University'",
+    "executedAt": "2026-01-01T18:15:07.326Z",
+    "executionTime": 13,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767291307326_cis9mgyop"
+  },
+  {
+    "connectionId": "conn_1767286537209_past0p3m2",
+    "connectionName": "My Postgres Database",
+    "query": "select*from Universities",
+    "executedAt": "2026-01-01T18:15:23.932Z",
+    "executionTime": 7,
+    "rowCount": 3,
+    "success": true,
+    "id": "history_1767291323932_7yfd55k7q"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.students",
+    "executedAt": "2026-01-01T18:26:07.600Z",
+    "executionTime": 6,
+    "rowCount": 3,
+    "success": true,
+    "id": "history_1767291967602_v9tikghf8"
+  },
+  {
+    "connectionId": "conn_1767289281877_w0i826wpq",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.students",
+    "executedAt": "2026-01-01T18:27:47.262Z",
+    "executionTime": 86,
+    "rowCount": 3,
+    "success": true,
+    "id": "history_1767292067262_sz7zn9np9"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "CREATE TABLE countries (\r\n    country_code CHAR(2) PRIMARY KEY,  -- ISO 2-letter country code\r\n    country_name VARCHAR(100) NOT NULL\r\n)",
+    "executedAt": "2026-01-01T18:41:19.529Z",
+    "executionTime": 30,
+    "rowCount": 0,
+    "success": true,
+    "id": "history_1767292879531_ib62v7obf"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "INSERT INTO countries (country_code, country_name)\r\nVALUES\r\n('US', 'United States'),\r\n('IN', 'India'),\r\n('GB', 'United Kingdom'),\r\n('CA', 'Canada'),\r\n('AU', 'Australia')",
+    "executedAt": "2026-01-01T18:41:29.781Z",
+    "executionTime": 10,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767292889781_cv0lmvb7v"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE countries\r\nSET country_name = 'New Country Name'\r\nWHERE country_code = 'CA'",
+    "executedAt": "2026-01-01T18:42:02.419Z",
+    "executionTime": 30,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767292922419_0fuye8y2m"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "Select* from countries",
+    "executedAt": "2026-01-01T18:42:31.158Z",
+    "executionTime": 14,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767292951158_kimz70o5y"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "Select* from countries",
+    "executedAt": "2026-01-01T18:43:24.295Z",
+    "executionTime": 44,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767293004320_1v0nba9w3"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "Select* from countries",
+    "executedAt": "2026-01-01T18:43:31.098Z",
+    "executionTime": 8,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767293011098_1a1hc7x1v"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.countries",
+    "executedAt": "2026-01-01T18:44:05.055Z",
+    "executionTime": 4,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767293045057_udwe60uoj"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.countries",
+    "executedAt": "2026-01-01T18:49:31.866Z",
+    "executionTime": 7,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767293371869_0mmkm6lnm"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.countries",
+    "executedAt": "2026-01-01T18:49:58.517Z",
+    "executionTime": 7,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767293398519_emgdzm22q"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.countries",
+    "executedAt": "2026-01-01T18:51:58.343Z",
+    "executionTime": 189,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767293518343_hn90uzsfv"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.countries",
+    "executedAt": "2026-01-01T18:53:02.026Z",
+    "executionTime": 20,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767293582063_howrc6l0i"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.countries LIMIT 100",
+    "executedAt": "2026-01-01T18:53:45.242Z",
+    "executionTime": 49,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767293625242_n3z10w8kf"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE countries\r\nSET country_name = 'hi'\r\nWHERE country_code = 'CA'",
+    "executedAt": "2026-01-01T18:54:10.720Z",
+    "executionTime": 30,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767293650721_67ljfju8f"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.countries",
+    "executedAt": "2026-01-01T18:54:47.981Z",
+    "executionTime": 6,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767293687983_c5xizagho"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.countries",
+    "executedAt": "2026-01-01T19:03:02.741Z",
+    "executionTime": 8,
+    "rowCount": 5,
+    "success": true,
+    "id": "history_1767294182743_v91cc07x2"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE public.countries\r\nSET\r\n    country_name = \"vghggjhhj\"\r\nWHERE id = CA",
+    "executedAt": "2026-01-01T19:04:14.826Z",
+    "executionTime": 0,
+    "rowCount": 0,
+    "success": false,
+    "error": "Query execution failed: column \"id\" does not exist",
+    "id": "history_1767294254826_oxcdhb7qs"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE public.countries\r\nSET\r\n    country_name = \"vghggjhhj\"\r\nWHERE country_code = CA",
+    "executedAt": "2026-01-01T19:04:36.710Z",
+    "executionTime": 0,
+    "rowCount": 0,
+    "success": false,
+    "error": "Query execution failed: column \"ca\" does not exist",
+    "id": "history_1767294276710_ep57o7828"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE public.countries\r\nSET\r\n    country_name = \"vghggjhhj\"\r\nWHERE country_code = 'CA'",
+    "executedAt": "2026-01-01T19:04:44.466Z",
+    "executionTime": 0,
+    "rowCount": 0,
+    "success": false,
+    "error": "Query execution failed: column \"vghggjhhj\" does not exist",
+    "id": "history_1767294284466_04rdj0hyu"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "CREATE TABLE players (\r\n    player_id SERIAL PRIMARY KEY,\r\n    name VARCHAR(100) NOT NULL,\r\n    email VARCHAR(150) UNIQUE,\r\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\r\n)",
+    "executedAt": "2026-01-01T19:06:10.569Z",
+    "executionTime": 1433,
+    "rowCount": 0,
+    "success": true,
+    "id": "history_1767294370569_l8pge66l6"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "INSERT INTO players (name, email)\r\nVALUES\r\n('Ayush', 'ayush@example.com'),\r\n('Rohit', 'rohit@example.com')",
+    "executedAt": "2026-01-01T19:06:21.973Z",
+    "executionTime": 18,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767294381973_7crgpwsm2"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:06:42.461Z",
+    "executionTime": 12,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767294402461_ymryoqq80"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE players\r\nSET name = 'Ayush Gupta',\r\n    email = 'ayush.gupta@example.com'\r\nWHERE player_id = 1",
+    "executedAt": "2026-01-01T19:06:49.200Z",
+    "executionTime": 12,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767294409200_8cbr8srbb"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM information_schema.tables LIMIT 10",
+    "executedAt": "2026-01-01T19:07:03.360Z",
+    "executionTime": 101,
+    "rowCount": 10,
+    "success": true,
+    "id": "history_1767294423362_c6z8k0nyb"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "Select*from players",
+    "executedAt": "2026-01-01T19:07:16.494Z",
+    "executionTime": 9,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767294436494_haw96ybou"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:08:02.907Z",
+    "executionTime": 5,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767294482907_q85h0iszm"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*FROM PLAYERS",
+    "executedAt": "2026-01-01T19:13:35.309Z",
+    "executionTime": 9,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767294815310_ya3dxofb4"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE players\r\nSET name = 'Ayush ROND'\r\nWHERE email = 'ayush.gupta@example.com'",
+    "executedAt": "2026-01-01T19:14:38.700Z",
+    "executionTime": 23,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767294878700_tgw1or1w6"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT*FROM PLAYERS",
+    "executedAt": "2026-01-01T19:14:48.791Z",
+    "executionTime": 32,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767294888791_z1ou848oh"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT*FROM PLAYERS",
+    "executedAt": "2026-01-01T19:16:18.401Z",
+    "executionTime": 68,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767294978402_ug4fitx6h"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT*FROM PLAYERS",
+    "executedAt": "2026-01-01T19:23:24.282Z",
+    "executionTime": 76,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767295404286_a303z0shr"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT*FROM PLAYERS",
+    "executedAt": "2026-01-01T19:23:24.330Z",
+    "executionTime": 16,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767295404330_nv4673kju"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE players\r\nSET name = 'Ritvik'\r\nWHERE email = 'rohit@example.com'",
+    "executedAt": "2026-01-01T19:23:58.033Z",
+    "executionTime": 39,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767295438036_qahl1hn1q"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:24:21.475Z",
+    "executionTime": 7,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767295461477_1sdnddnb7"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.players",
+    "executedAt": "2026-01-01T19:24:49.689Z",
+    "executionTime": 5,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767295489690_kpqe9ircj"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE players\r\nSET name = 'Ayush'\r\nWHERE email = 'rohit@example.com'",
+    "executedAt": "2026-01-01T19:25:24.468Z",
+    "executionTime": 11,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767295524468_ccpjwzhwy"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:25:36.931Z",
+    "executionTime": 4,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767295536931_zdc5vfyaa"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:26:05.621Z",
+    "executionTime": 3,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767295565621_y07utsskf"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.players",
+    "executedAt": "2026-01-01T19:27:36.491Z",
+    "executionTime": 6,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767295656491_rz5jrow9z"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE players\r\nSET name = 'Rohit Sharma'\r\nWHERE email = 'rohit@example.com'",
+    "executedAt": "2026-01-01T19:28:01.959Z",
+    "executionTime": 16,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767295681959_42uuwc391"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.players",
+    "executedAt": "2026-01-01T19:28:03.803Z",
+    "executionTime": 6,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767295683803_4x0szvrcq"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM public.players",
+    "executedAt": "2026-01-01T19:31:39.171Z",
+    "executionTime": 8,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767295899173_08dq9vwum"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:38:28.672Z",
+    "executionTime": 9,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767296308673_yzmxxb88v"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE players\r\nSET name = 'Rohit  KIng'\r\nWHERE email = 'rohit@example.com'",
+    "executedAt": "2026-01-01T19:38:41.431Z",
+    "executionTime": 497,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767296321431_s7qk9zerg"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:38:42.863Z",
+    "executionTime": 4,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767296322863_azult3bjn"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T19:41:38.708Z",
+    "executionTime": 7,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767296498709_a2d8cvkri"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players\r\n\r\nSELECT * FROM players",
+    "executedAt": "2026-01-01T19:44:28.847Z",
+    "executionTime": 0,
+    "rowCount": 0,
+    "success": false,
+    "error": "Query execution failed: syntax error at or near \"SELECT\"",
+    "id": "history_1767296668849_lenbpp2j6"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T19:44:32.762Z",
+    "executionTime": 14,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767296672762_txmbr3lp4"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T19:44:34.965Z",
+    "executionTime": 12,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767296674965_a0x5s004z"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players\r\n\r\nSELECT * FROM players",
+    "executedAt": "2026-01-01T19:44:37.878Z",
+    "executionTime": 0,
+    "rowCount": 0,
+    "success": false,
+    "error": "Query execution failed: syntax error at or near \"SELECT\"",
+    "id": "history_1767296677878_d22hvivai"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T19:44:44.691Z",
+    "executionTime": 4,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767296684691_fcuxtmmwz"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T19:44:44.715Z",
+    "executionTime": 3,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767296684715_og7yyst4c"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:55:37.333Z",
+    "executionTime": 14,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767297337335_rietvmh68"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players WHERE email = 'rohit@example.com'",
+    "executedAt": "2026-01-01T19:55:52.868Z",
+    "executionTime": 14,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767297352868_w0dg2wn3p"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE players\r\nSET name = 'Rohit KIng'\r\nWHERE email = 'rohit@example.com'",
+    "executedAt": "2026-01-01T19:55:52.922Z",
+    "executionTime": 30,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767297352922_oq3slrox0"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:55:54.256Z",
+    "executionTime": 3,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767297354256_bdvqiqae7"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players WHERE email = 'rohit@example.com'",
+    "executedAt": "2026-01-01T19:56:12.359Z",
+    "executionTime": 5,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767297372359_j9z85zsgq"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE players\r\nSET name = 'Rohit Sharma'\r\nWHERE email = 'rohit@example.com'",
+    "executedAt": "2026-01-01T19:56:12.403Z",
+    "executionTime": 9,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767297372403_aakyeiyfm"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:56:14.436Z",
+    "executionTime": 4,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767297374436_ys3r9rbr5"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:56:58.656Z",
+    "executionTime": 12,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767297418658_usv6w8l1f"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players WHERE email = 'ayush.gupta@example.com'",
+    "executedAt": "2026-01-01T19:57:16.252Z",
+    "executionTime": 5,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767297436252_h4q662myo"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE players\r\nSET name = 'Ayush Gupta'\r\nWHERE email = 'ayush.gupta@example.com'",
+    "executedAt": "2026-01-01T19:57:16.285Z",
+    "executionTime": 10,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767297436285_xj3mih7aa"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "select*from players",
+    "executedAt": "2026-01-01T19:57:17.341Z",
+    "executionTime": 3,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767297437342_giqzdmcv4"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T19:57:53.006Z",
+    "executionTime": 49,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767297473036_wadnpcjv8"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players WHERE email = 'ayush.gupta@example.com'",
+    "executedAt": "2026-01-01T19:58:53.977Z",
+    "executionTime": 74,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767297533978_gbv2lh4zv"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE players\r\nSET name = 'Ayush GGGGG'\r\nWHERE email = 'ayush.gupta@example.com'",
+    "executedAt": "2026-01-01T19:58:54.019Z",
+    "executionTime": 15,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767297534019_dx6wlg4m4"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T19:58:55.235Z",
+    "executionTime": 3,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767297535235_l1ivzxscf"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T19:59:16.009Z",
+    "executionTime": 4,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767297556009_whh5sgf80"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T20:07:57.538Z",
+    "executionTime": 13,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767298077542_nmmusilte"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players WHERE email = 'ayush.gupta@example.com'",
+    "executedAt": "2026-01-01T20:08:39.151Z",
+    "executionTime": 19,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767298119152_fvwp2klb9"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "UPDATE players\r\nSET name = 'Arushhhh'\r\nWHERE email = 'ayush.gupta@example.com'",
+    "executedAt": "2026-01-01T20:08:39.198Z",
+    "executionTime": 23,
+    "rowCount": 1,
+    "success": true,
+    "id": "history_1767298119198_qthdgft94"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T20:08:53.960Z",
+    "executionTime": 151,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767298133996_ba9dt3pwj"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T20:09:17.227Z",
+    "executionTime": 4,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767298157227_60fi40ees"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T20:09:55.911Z",
+    "executionTime": 3,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767298195911_gr52yq028"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T20:11:00.313Z",
+    "executionTime": 4,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767298260313_uk4iwqxss"
+  },
+  {
+    "connectionId": "conn_1767292847494_6f36r1gat",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM players",
+    "executedAt": "2026-01-01T20:18:14.342Z",
+    "executionTime": 17,
+    "rowCount": 2,
+    "success": true,
+    "id": "history_1767298694346_coqdk38ea"
+  }
+]
