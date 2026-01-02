@@ -1,1 +1,6 @@
-{}
+{
+  "/api/schema/route": "app/api/schema/route.js",
+  "/api/connections/route": "app/api/connections/route.js",
+  "/api/vcs/pending/route": "app/api/vcs/pending/route.js",
+  "/query/page": "app/query/page.js"
+}
