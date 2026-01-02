@@ -56,3 +56,29 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: error.message || 'Schema operation failed' }, { status: 500 });
     }
 }
+
+export async function GET(request: NextRequest) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const connectionId = searchParams.get('connectionId');
+        const tableName = searchParams.get('table');
+        const schema = searchParams.get('schema') || 'public';
+
+        if (!connectionId || !tableName) {
+            return NextResponse.json({ error: 'Missing connectionId or table name' }, { status: 400 });
+        }
+
+        const { adapter, adapterConnectionId } = await getConnectedAdapter(connectionId);
+
+        // Describe table
+        const tableMetadata = await adapter.describeTable(adapterConnectionId, schema, tableName);
+
+        // Generate CREATE TABLE SQL
+        const sql = generateCreateTableSQL(tableMetadata, schema);
+
+        return NextResponse.json({ success: true, tableMetadata, sql });
+    } catch (error: any) {
+        console.error('Failed to fetch table definition:', error);
+        return NextResponse.json({ error: error.message || 'Failed to fetch table definition' }, { status: 500 });
+    }
+}

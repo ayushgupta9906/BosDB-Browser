@@ -419,7 +419,101 @@ function VersionControlContent() {
                             </div>
                         )}
 
-                        {/* Commits Tab */}
+                        {/* Commits Tab - Commit Details View */}
+                        {activeTab === 'commits' && showDiff && selectedCommit && (
+                            <div>
+                                <button
+                                    onClick={() => { setShowDiff(false); setSelectedCommit(null); }}
+                                    className="mb-4 text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                                >
+                                    ← Back to Commit List
+                                </button>
+
+                                <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
+                                    <div className="flex items-start justify-between mb-6">
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <span className="px-3 py-1.5 bg-purple-600/30 text-purple-400 rounded font-mono text-lg font-bold">
+                                                    r{commits.findIndex(c => c.id === selectedCommit.id) ? -commits.findIndex(c => c.id === selectedCommit.id) : 0}
+                                                </span>
+                                                <h2 className="text-2xl font-bold">{selectedCommit.message}</h2>
+                                            </div>
+                                            <p className="text-gray-400">
+                                                by <strong>{selectedCommit.author?.name}</strong> ({selectedCommit.author?.email})
+                                                <br />
+                                                {new Date(selectedCommit.timestamp).toLocaleDateString()} at {new Date(selectedCommit.timestamp).toLocaleTimeString()}
+                                            </p>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => revertCommit(selectedCommit.id, selectedCommit.message)}
+                                                className="px-4 py-2 bg-red-600/30 hover:bg-red-600 border border-red-500/50 rounded-lg transition flex items-center gap-2"
+                                            >
+                                                ⏪ Revert This Commit
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-6">
+                                        <h3 className="text-lg font-semibold mb-3">Commit ID</h3>
+                                        <code className="bg-gray-900 px-4 py-2 rounded block font-mono text-sm">
+                                            {selectedCommit.id}
+                                        </code>
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-3">Changes ({selectedCommit.changes?.length || 0})</h3>
+                                        {(!selectedCommit.changes || selectedCommit.changes.length === 0) ? (
+                                            <p className="text-gray-400 italic">No detailed changes recorded</p>
+                                        ) : (
+                                            <div className="space-y-4">
+                                                {selectedCommit.changes.map((change: any, idx: number) => (
+                                                    <div
+                                                        key={idx}
+                                                        className={`rounded-lg p-4 ${change.type === 'SCHEMA'
+                                                                ? 'bg-purple-900/20 border border-purple-500/30'
+                                                                : 'bg-green-900/20 border border-green-500/30'
+                                                            }`}
+                                                    >
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <span className={`px-2 py-1 text-xs rounded font-semibold ${change.type === 'SCHEMA'
+                                                                    ? 'bg-purple-500/30 text-purple-400'
+                                                                    : 'bg-green-500/30 text-green-400'
+                                                                }`}>
+                                                                {change.type}
+                                                            </span>
+                                                            <span className="font-mono text-sm font-semibold">{change.operation}</span>
+                                                            <span className="text-gray-400">{change.target}</span>
+                                                        </div>
+
+                                                        {change.description && (
+                                                            <p className="text-sm text-gray-300 mb-2">{change.description}</p>
+                                                        )}
+
+                                                        {change.query && (
+                                                            <div className="bg-black/30 rounded p-3 overflow-x-auto">
+                                                                <pre className="text-sm text-green-400 whitespace-pre-wrap">{change.query}</pre>
+                                                            </div>
+                                                        )}
+
+                                                        {change.rollbackSQL && (
+                                                            <div className="mt-3">
+                                                                <p className="text-xs text-gray-500 mb-1">Rollback SQL:</p>
+                                                                <div className="bg-black/30 rounded p-3 overflow-x-auto">
+                                                                    <pre className="text-sm text-orange-400 whitespace-pre-wrap">{change.rollbackSQL}</pre>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Commits Tab - List View */}
                         {activeTab === 'commits' && !showDiff && (
                             <div>
                                 <div className="flex justify-between mb-4">
@@ -451,7 +545,7 @@ function VersionControlContent() {
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-3 mb-2">
-                                                            <span className="px-2 py-1 bg-purple-600/20 text-purple-400 rounded font-mono text-sm">
+                                                            <span className="px-2 py-1 bg-purple-600/20 text-purple-400 rounded font-mono text-sm font-bold">
                                                                 r{-idx}
                                                             </span>
                                                             <h3 className="font-semibold text-lg">{commit.message}</h3>

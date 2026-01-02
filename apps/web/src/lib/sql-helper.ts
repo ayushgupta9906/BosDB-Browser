@@ -87,12 +87,12 @@ export interface TableDef {
     columns: ColumnDef[];
 }
 
-export function generateCreateTableSQL(tableDef: TableDef, schema: string = 'public'): string {
+export function generateCreateTableSQL(tableDef: any, schema: string = 'public'): string {
     if (!tableDef.name) throw new Error('Table name is required');
     if (!tableDef.columns || tableDef.columns.length === 0) throw new Error('At least one column is required');
 
-    const columnDefinitions = tableDef.columns.map(col => {
-        const parts = [`"${col.name}"`, col.type];
+    const columnDefinitions = tableDef.columns.map((col: any) => {
+        const parts = [`"${col.name}"`, col.type || col.dataType];
 
         if (col.isPrimaryKey) {
             parts.push('PRIMARY KEY');

@@ -282,12 +282,11 @@ export function AIAssistantPanel({
         return (
             <button
                 onClick={() => setIsOpen(true)}
-                className="fixed right-4 top-1/2 -translate-y-1/2 bg-gradient-to-r from-purple-500 to-pink-500 text-white p-3 rounded-l-xl shadow-lg hover:from-purple-600 hover:to-pink-600 transition-all z-40 flex items-center gap-2 group"
+                className="fixed bottom-20 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all z-50 flex items-center justify-center group border-2 border-white/20"
                 title="AI Query Assistant"
             >
-                <Sparkles className="w-5 h-5" />
-                <span className="hidden group-hover:inline text-sm font-medium">Ask AI</span>
-                <ChevronLeft className="w-4 h-4" />
+                <Sparkles className="w-6 h-6 animate-pulse" />
+                <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 transition-all duration-500 text-sm font-bold whitespace-nowrap">Ask AI</span>
             </button>
         );
     }

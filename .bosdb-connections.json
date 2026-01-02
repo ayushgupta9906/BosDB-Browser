@@ -11,5 +11,31 @@
     "userEmail": "testy@gmail.com",
     "organizationId": "ind-testy",
     "createdAt": "2026-01-01T18:40:47.494Z"
+  },
+  "conn_1767358132773_4q9xyimqd": {
+    "id": "conn_1767358132773_4q9xyimqd",
+    "name": "My Postgres Database",
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5462,
+    "database": "my_postgres_database",
+    "credentials": "MbeD5dP+t9GNAsDHEjfJ+KyRWu61fpkJWWkEBUI46PAz3cxaVDFQTg7cKRGvusuweHho8kN7gvawDZ6Rjd3hczwWTq0Ye86s2ib/tVYCg+uC5GR8jH1bm+eHp1SWtE76r98=",
+    "readOnly": false,
+    "userEmail": "ayush@flipkart.com",
+    "organizationId": "flipkart.com",
+    "createdAt": "2026-01-02T12:48:52.773Z"
+  },
+  "conn_1767370786696_34z367qyu": {
+    "id": "conn_1767370786696_34z367qyu",
+    "name": "My Postgres Database",
+    "type": "postgres",
+    "host": "localhost",
+    "port": 5466,
+    "database": "my_postgres_database",
+    "credentials": "9BwGBVfAI3WhzrvWYaYOsxWizlAh8kqhXCm59y7JOpRuQPB7UyzVTx6jAFu4nSv/VkCyPO75GasxQReaS2NC/GrKdgEGVwkeNGpJSxZ3rdniAxeVdK04B4Q5ZXUCV/rQsKU=",
+    "readOnly": false,
+    "userEmail": "ritvik@marlo.com",
+    "organizationId": "marlo.com",
+    "createdAt": "2026-01-02T16:19:46.697Z"
   }
 }

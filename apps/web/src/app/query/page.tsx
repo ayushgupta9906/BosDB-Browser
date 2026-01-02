@@ -2,15 +2,19 @@
 
 import { getCurrentUser } from '@/lib/auth';
 
-import { useState, useEffect, useCallback, Suspense, useMemo } from 'react';
+import { useState, useEffect, useCallback, Suspense, useMemo, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Editor from '@monaco-editor/react';
 import { useTheme } from 'next-themes';
-import { Play, Save, Download, Clock, Table as TableIcon, Database, ChevronRight, ChevronDown, GitBranch, Plus as PlusIcon, FileCode, Wand2, FileSearch, FileStack, Upload, RefreshCw } from 'lucide-react';
+import { Play, Save, Download, Clock, Table as TableIcon, Database, ChevronRight, ChevronDown, GitBranch, Plus as PlusIcon, FileCode, Wand2, FileSearch, FileStack, Upload, RefreshCw, Bug, X } from 'lucide-react';
 import Link from 'next/link';
 import { trackChange, parseQueryForChanges, getPendingChanges, generateRollbackSQL } from '@/lib/vcs-helper';
 import { extractTableName, getCurrentStatement } from '@/lib/sql-helper';
 import { formatSQL, getDialectFromDbType, getExplainPrefix } from '@/lib/sql-formatter';
+import { splitSQL } from '@/lib/sql-splitter';
+import { saveTabs, loadTabs, createDefaultTabs, generateTabId } from '@/lib/query-storage';
+import QueryTabs, { QueryTab } from '@/components/QueryTabs';
+import DebuggerPanel from '@/components/DebuggerPanel';
 import TableDesigner from '@/components/schema/TableDesigner';
 import { SaveQueryModal } from '@/components/SaveQueryModal';
 import { ExportModal } from '@/components/ExportModal';
@@ -32,6 +36,8 @@ interface QueryResult {
     rowCount: number;
     executionTime: number;
     hasMore?: boolean;
+    tableName?: string; // Table name for inline editing
+    originalQuery?: string; // Original query for reference
 }
 
 interface TableInfo {
@@ -178,7 +184,14 @@ function QueryPageContent() {
     const connectionId = searchParams?.get('connection');
     const { theme } = useTheme();
 
-    const [query, setQuery] = useState('SELECT * FROM information_schema.tables LIMIT 10;');
+    // Multi-tab state
+    const [tabs, setTabs] = useState<QueryTab[]>([]);
+    const [activeTabIndex, setActiveTabIndex] = useState(0);
+    const [showDebugger, setShowDebugger] = useState(true);
+    const [tabsLoaded, setTabsLoaded] = useState(false);
+
+    // Current query is derived from active tab
+    const query = tabs[activeTabIndex]?.query || '';
     const [results, setResults] = useState<QueryResult[]>([]);
     const [executing, setExecuting] = useState(false);
     const [error, setError] = useState('');
@@ -207,6 +220,12 @@ function QueryPageContent() {
     const [importTable, setImportTable] = useState<{ name: string; schema: string } | null>(null);
     const [exportingIndex, setExportingIndex] = useState<number>(0);
     const [activeTab, setActiveTab] = useState<number>(0);
+    const [procedureMenu, setProcedureMenu] = useState<{
+        x: number;
+        y: number;
+        procedureName: string;
+        schemaName: string;
+    } | null>(null);
 
     // Loading states map: schemaName -> { tables: boolean, procedures: boolean }
     const [loadingResources, setLoadingResources] = useState<Map<string, { tables: boolean; procedures: boolean }>>(new Map());
@@ -214,9 +233,124 @@ function QueryPageContent() {
     const [history, setHistory] = useState<any[]>([]);
     const [showHistory, setShowHistory] = useState(false);
     const [monacoInstance, setMonacoInstance] = useState<any>(null);
+    const [debugSessionId, setDebugSessionId] = useState<string | null>(null);
+    const [debugStatus, setDebugStatus] = useState<'stopped' | 'running' | 'paused'>('stopped');
+    const [debugCurrentLine, setDebugCurrentLine] = useState<number | null>(null);
+    const debugDecorationRef = useRef<string[]>([]);
+    const breakpointDecorationsRef = useRef<Map<number, string[]>>(new Map());
 
     // Memoize columns for the first result (fallback)
     const columns = useMemo(() => results.length > 0 ? results[0].fields.map(f => f.name) : [], [results]);
+
+    // Tab management functions
+    const setQuery = useCallback((newQuery: string) => {
+        setTabs(prevTabs => {
+            const updated = [...prevTabs];
+            if (updated[activeTabIndex]) {
+                updated[activeTabIndex] = { ...updated[activeTabIndex], query: newQuery, isDirty: true };
+            }
+            return updated;
+        });
+    }, [activeTabIndex]);
+
+    const currentBreakpoints = tabs[activeTabIndex]?.breakpoints || [];
+
+    const setBreakpointsForTab = useCallback((lineNumbers: number[]) => {
+        setTabs(prevTabs => {
+            const updated = [...prevTabs];
+            if (updated[activeTabIndex]) {
+                updated[activeTabIndex] = { ...updated[activeTabIndex], breakpoints: lineNumbers };
+            }
+            return updated;
+        });
+    }, [activeTabIndex]);
+
+    const syncBreakpointToBackend = async (line: number, enabled: boolean) => {
+        if (!debugSessionId) return;
+        try {
+            await fetch(`/api/debug/sessions/${debugSessionId}/breakpoints`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    type: 'line',
+                    config: { lineNumber: line, enabled }
+                })
+            });
+        } catch (e) {
+            console.error('Failed to sync breakpoint:', e);
+        }
+    };
+
+    const toggleBreakpoint = useCallback((line: number) => {
+        const current = [...currentBreakpoints];
+        const idx = current.indexOf(line);
+        let enabled = true;
+        if (idx >= 0) {
+            current.splice(idx, 1);
+            enabled = false;
+        } else {
+            current.push(line);
+            enabled = true;
+        }
+        setBreakpointsForTab(current);
+        syncBreakpointToBackend(line, enabled);
+    }, [currentBreakpoints, setBreakpointsForTab, debugSessionId]);
+
+    const addNewTab = useCallback(() => {
+        const newTab: QueryTab = {
+            id: generateTabId(),
+            name: `Query ${tabs.length + 1}`,
+            query: '',
+            breakpoints: []
+        };
+        setTabs(prev => [...prev, newTab]);
+        setActiveTabIndex(tabs.length);
+    }, [tabs.length]);
+
+    const closeTab = useCallback((index: number) => {
+        if (tabs.length <= 1) return;
+        setTabs(prev => prev.filter((_, i) => i !== index));
+        if (activeTabIndex >= index && activeTabIndex > 0) {
+            setActiveTabIndex(activeTabIndex - 1);
+        }
+    }, [tabs.length, activeTabIndex]);
+
+    const renameTab = useCallback((index: number, newName: string) => {
+        setTabs(prevTabs => {
+            const updated = [...prevTabs];
+            if (updated[index]) {
+                updated[index] = { ...updated[index], name: newName };
+            }
+            return updated;
+        });
+    }, []);
+
+    // Load tabs from localStorage on mount
+    useEffect(() => {
+        if (connectionId && !tabsLoaded) {
+            const saved = loadTabs(connectionId);
+            if (saved && saved.tabs.length > 0) {
+                setTabs(saved.tabs);
+                setActiveTabIndex(saved.activeIndex);
+            } else {
+                const defaults = createDefaultTabs();
+                setTabs(defaults.tabs);
+                setActiveTabIndex(defaults.activeIndex);
+            }
+            setTabsLoaded(true);
+        }
+    }, [connectionId, tabsLoaded]);
+
+    // Save tabs to localStorage on changes (debounced)
+    useEffect(() => {
+        if (!connectionId || !tabsLoaded || tabs.length === 0) return;
+
+        const timeoutId = setTimeout(() => {
+            saveTabs(connectionId, { tabs, activeIndex: activeTabIndex });
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
+    }, [tabs, activeTabIndex, connectionId, tabsLoaded]);
 
     const updateLoading = (schema: string, type: 'tables' | 'procedures', isLoading: boolean) => {
         setLoadingResources(prev => {
@@ -306,6 +440,46 @@ function QueryPageContent() {
     };
 
 
+
+    // Monaco decorations for breakpoints and current line
+    useEffect(() => {
+        if (!editorRef || !monacoInstance) return;
+
+        const model = editorRef.getModel();
+        if (model) {
+            const newDecorations: any[] = [];
+
+            // Highlight current execution line
+            if (debugCurrentLine) {
+                newDecorations.push({
+                    range: new monacoInstance.Range(debugCurrentLine, 1, debugCurrentLine, 1),
+                    options: {
+                        isWholeLine: true,
+                        className: 'debug-current-line-highlight',
+                        glyphMarginClassName: 'debug-current-line-glyph',
+                        stickiness: monacoInstance.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
+                    }
+                });
+            }
+
+            // Highlight breakpoints
+            currentBreakpoints.forEach(line => {
+                newDecorations.push({
+                    range: new monacoInstance.Range(line, 1, line, 1),
+                    options: {
+                        isWholeLine: false,
+                        glyphMarginClassName: 'debug-breakpoint-glyph',
+                        stickiness: monacoInstance.editor.TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
+                    }
+                });
+            });
+
+            debugDecorationRef.current = editorRef.deltaDecorations(
+                debugDecorationRef.current,
+                newDecorations
+            );
+        }
+    }, [editorRef, monacoInstance, debugCurrentLine, currentBreakpoints]);
 
     useEffect(() => {
         if (connectionId) {
@@ -474,11 +648,7 @@ function QueryPageContent() {
         setWarning('');
         setResults([]);
 
-        // Split queries by semicolon (basic splitting)
-        const queries = rawQuery
-            .split(';')
-            .map(q => q.trim())
-            .filter(q => q.length > 0);
+        const queries = splitSQL(rawQuery);
 
         if (queries.length === 0) {
             setExecuting(false);
@@ -500,34 +670,59 @@ function QueryPageContent() {
                 let metadata: any = {};
 
                 // Capture Metadata for Rollback (Row Snapshots)
-                if (qUpper.startsWith('DELETE FROM') || qUpper.startsWith('UPDATE')) {
+                if (qUpper.startsWith('DELETE FROM') || qUpper.startsWith('UPDATE') || qUpper.startsWith('DROP TABLE')) {
                     try {
-                        const tableNameMatch = q.match(/(?:DELETE\s+FROM|UPDATE)\s+([`"]?)(\w+)\1/i);
+                        const tableNameMatch = q.match(/(?:DELETE\s+FROM|UPDATE|DROP\s+TABLE\s+(?:IF\s+EXISTS\s+)?)\s+([`"]?)([\w.]+)\1/i);
                         const whereMatch = q.match(/WHERE\s+([\s\S]+)$/i);
 
                         if (tableNameMatch) {
-                            const tableName = tableNameMatch[2];
+                            const fullTableName = tableNameMatch[2];
                             const whereClause = whereMatch ? whereMatch[0] : '';
 
-                            // Capture rows BEFORE they are changed/deleted
-                            const snapshotRes = await fetch('/api/query', {
-                                method: 'POST',
-                                headers: getHeaders(),
-                                body: JSON.stringify({
-                                    connectionId,
-                                    query: `SELECT * FROM ${tableName} ${whereClause}`,
-                                    timeout: 10000,
-                                    maxRows: 1000
-                                }),
-                            });
+                            if (qUpper.startsWith('DROP TABLE')) {
+                                // Extract schema if present (e.g., public.users)
+                                let schema = 'public';
+                                let tableOnly = fullTableName;
 
-                            if (snapshotRes.ok) {
-                                const snapshotData = await snapshotRes.json();
-                                if (qUpper.startsWith('DELETE FROM')) {
-                                    metadata.rows = snapshotData.rows;
+                                if (fullTableName.includes('.')) {
+                                    const parts = fullTableName.split('.');
+                                    schema = parts[0].replace(/["`]/g, '');
+                                    tableOnly = parts[1].replace(/["`]/g, '');
                                 } else {
-                                    metadata.oldRows = snapshotData.rows;
-                                    metadata.primaryKeyFields = snapshotData.fields?.map((f: any) => f.name).slice(0, 1); // Heuristic
+                                    tableOnly = fullTableName.replace(/["`]/g, '');
+                                }
+
+                                // Capture table structure before dropping
+                                const ddlRes = await fetch(`/api/schema/table?connectionId=${connectionId}&table=${tableOnly}&schema=${schema}`, {
+                                    headers: getHeaders(),
+                                });
+                                if (ddlRes.ok) {
+                                    const ddlData = await ddlRes.json();
+                                    metadata.originalCreateSQL = ddlData.sql;
+                                    metadata.tableMetadata = ddlData.tableMetadata;
+                                }
+                            } else {
+                                // Capture rows BEFORE they are changed/deleted
+                                const tableNameOnly = fullTableName.includes('.') ? fullTableName.split('.')[1].replace(/["`]/g, '') : fullTableName.replace(/["`]/g, '');
+                                const snapshotRes = await fetch('/api/query', {
+                                    method: 'POST',
+                                    headers: getHeaders(),
+                                    body: JSON.stringify({
+                                        connectionId,
+                                        query: `SELECT * FROM ${fullTableName} ${whereClause}`,
+                                        timeout: 10000,
+                                        maxRows: 1000
+                                    }),
+                                });
+
+                                if (snapshotRes.ok) {
+                                    const snapshotData = await snapshotRes.json();
+                                    if (qUpper.startsWith('DELETE FROM')) {
+                                        metadata.rows = snapshotData.rows;
+                                    } else {
+                                        metadata.oldRows = snapshotData.rows;
+                                        metadata.primaryKeyFields = snapshotData.fields?.map((f: any) => f.name).slice(0, 1); // Heuristic
+                                    }
                                 }
                             }
                         }
@@ -554,9 +749,14 @@ function QueryPageContent() {
                     break;
                 }
 
+                // Extract table name from query for inline editing
+                const tableNameFromQuery = extractTableName(q);
+
                 const resultWithColumns: QueryResult = {
                     ...data,
-                    columnNames: data.fields?.map((f: any) => f.name) || []
+                    columnNames: data.fields?.map((f: any) => f.name) || [],
+                    tableName: tableNameFromQuery || undefined,
+                    originalQuery: q
                 };
                 allResults.push(resultWithColumns);
 
@@ -787,8 +987,17 @@ function QueryPageContent() {
                                                     <button
                                                         key={proc.name}
                                                         onClick={() => setQuery(`CALL ${schema.name}.${proc.name}();`)}
+                                                        onContextMenu={(e) => {
+                                                            e.preventDefault();
+                                                            setProcedureMenu({
+                                                                x: e.clientX,
+                                                                y: e.clientY,
+                                                                procedureName: proc.name,
+                                                                schemaName: schema.name
+                                                            });
+                                                        }}
                                                         className="w-full flex items-center gap-1 px-2 py-1 hover:bg-accent rounded transition text-left"
-                                                        title={`Click to call ${proc.name}`}
+                                                        title={`Click to call, right-click for options`}
                                                     >
                                                         <FileCode className="w-3 h-3 text-blue-400" />
                                                         <span className="text-xs">{proc.name}</span>
@@ -823,6 +1032,18 @@ function QueryPageContent() {
                         </div>
                     )}
 
+                    {/* Query Tabs Bar */}
+                    {tabs.length > 0 && (
+                        <QueryTabs
+                            tabs={tabs}
+                            activeIndex={activeTabIndex}
+                            onTabChange={setActiveTabIndex}
+                            onTabClose={closeTab}
+                            onTabAdd={addNewTab}
+                            onTabRename={renameTab}
+                        />
+                    )}
+
                     {/* Toolbar */}
                     <div className="border-b border-border p-4 flex items-center gap-2 flex-wrap">
                         <button
@@ -831,27 +1052,7 @@ function QueryPageContent() {
                             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition disabled:opacity-50 flex items-center gap-2"
                         >
                             <Play className="w-4 h-4" />
-                            {executing ? 'Executing...' : 'Run'}
-                        </button>
-
-                        <button
-                            onClick={executeByCursor}
-                            disabled={executing || !query.trim()}
-                            className="px-3 py-2 border border-border rounded-lg hover:bg-accent transition flex items-center gap-2"
-                            title="Execute Statement Under Cursor (Ctrl+Enter)"
-                        >
-                            <Play className="w-4 h-4 text-green-500" />
-                            Statement
-                        </button>
-
-                        <button
-                            onClick={handleExplainQuery}
-                            disabled={executing || !query.trim()}
-                            className="px-3 py-2 border border-border rounded-lg hover:bg-accent transition flex items-center gap-2"
-                            title="Explain Query Plan"
-                        >
-                            <FileSearch className="w-4 h-4" />
-                            Explain
+                            {executing ? 'Executing...' : 'Run (Ctrl+E)'}
                         </button>
 
                         <div className="w-px h-6 bg-border" />
@@ -918,6 +1119,15 @@ function QueryPageContent() {
                             History
                         </button>
 
+                        <button
+                            onClick={() => setShowDebugger(!showDebugger)}
+                            className={`px-3 py-2 border border-border rounded-lg transition flex items-center gap-2 ${showDebugger ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-500' : 'hover:bg-accent'}`}
+                            title="Toggle Debugger Panel"
+                        >
+                            <Bug className="w-4 h-4" />
+                            Debug
+                        </button>
+
                         <div className="flex-1" />
 
                         {results.length > 0 && (
@@ -931,9 +1141,9 @@ function QueryPageContent() {
                         )}
                     </div>
 
-                    {/* Editor */}
-                    <div className="h-80 border-b border-border">
-                        < Editor
+                    {/* Editor - Larger size for better usability */}
+                    <div className="h-[450px] border-b border-border">
+                        <Editor
                             height="100%"
                             language="sql"
                             theme={theme === 'dark' ? 'vs-dark' : 'vs-light'}
@@ -942,6 +1152,17 @@ function QueryPageContent() {
                             onMount={(editor: any, monaco: any) => {
                                 setEditorRef(editor);
                                 setMonacoInstance(monaco);
+
+                                // Click on line numbers to toggle breakpoints
+                                editor.onMouseDown((e: any) => {
+                                    if (e.target.type === monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN ||
+                                        e.target.type === monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS) {
+                                        const lineNumber = e.target.position?.lineNumber;
+                                        if (lineNumber) {
+                                            toggleBreakpoint(lineNumber);
+                                        }
+                                    }
+                                });
                             }}
                             options={{
                                 minimap: { enabled: false },
@@ -951,6 +1172,8 @@ function QueryPageContent() {
                                 automaticLayout: true,
                                 tabSize: 2,
                                 wordWrap: 'on',
+                                glyphMargin: true,
+                                lineDecorationsWidth: 10,
                             }}
                         />
                     </div>
@@ -1022,8 +1245,81 @@ function QueryPageContent() {
                                             <DataEditor
                                                 rows={results[activeTab].rows}
                                                 fields={results[activeTab].fields}
-                                                onSave={async () => {
-                                                    alert("Inline editing is currently limited to the first result set in multi-query mode.");
+                                                onSave={async (updates) => {
+                                                    // Get table name from result set
+                                                    const tableName = results[activeTab].tableName;
+                                                    if (!tableName) {
+                                                        alert('Cannot edit: Unable to determine table name from query. Only simple SELECT queries support inline editing.');
+                                                        return;
+                                                    }
+
+                                                    // Execute UPDATE queries for each row
+                                                    for (const update of updates) {
+                                                        const setClauses = Object.entries(update.changes)
+                                                            .map(([col, val]) => {
+                                                                if (val === null) return `${col} = NULL`;
+                                                                if (typeof val === 'string') return `${col} = '${val.replace(/'/g, "''")}'`;
+                                                                if (typeof val === 'boolean') return `${col} = ${val}`;
+                                                                return `${col} = ${val}`;
+                                                            })
+                                                            .join(', ');
+
+                                                        const whereClauses = Object.entries(update.primaryKey)
+                                                            .map(([col, val]) => {
+                                                                if (val === null) return `${col} IS NULL`;
+                                                                if (typeof val === 'string') return `${col} = '${val.replace(/'/g, "''")}'`;
+                                                                return `${col} = ${val}`;
+                                                            })
+                                                            .join(' AND ');
+
+                                                        const updateQuery = `UPDATE ${tableName} SET ${setClauses} WHERE ${whereClauses}`;
+
+                                                        const res = await fetch('/api/query', {
+                                                            method: 'POST',
+                                                            headers: getHeaders(),
+                                                            body: JSON.stringify({
+                                                                connectionId,
+                                                                query: updateQuery,
+                                                                timeout: 30000
+                                                            })
+                                                        });
+
+                                                        if (!res.ok) {
+                                                            const errData = await res.json();
+                                                            throw new Error(errData.error || 'Update failed');
+                                                        }
+                                                    }
+
+                                                    // Refresh the current result set - re-run the original query
+                                                    const originalQuery = results[activeTab].originalQuery;
+                                                    if (originalQuery) {
+                                                        const refreshRes = await fetch('/api/query', {
+                                                            method: 'POST',
+                                                            headers: getHeaders(),
+                                                            body: JSON.stringify({
+                                                                connectionId,
+                                                                query: originalQuery,
+                                                                timeout: 30000,
+                                                                maxRows: 1000
+                                                            })
+                                                        });
+
+                                                        if (refreshRes.ok) {
+                                                            const refreshData = await refreshRes.json();
+                                                            const updatedResult: QueryResult = {
+                                                                ...refreshData,
+                                                                columnNames: refreshData.fields?.map((f: any) => f.name) || [],
+                                                                tableName: results[activeTab].tableName,
+                                                                originalQuery: originalQuery
+                                                            };
+
+                                                            setResults(prev => {
+                                                                const newResults = [...prev];
+                                                                newResults[activeTab] = updatedResult;
+                                                                return newResults;
+                                                            });
+                                                        }
+                                                    }
                                                 }}
                                             />
                                         </div>
@@ -1039,6 +1335,22 @@ function QueryPageContent() {
                         )}
                     </div>
                 </div>
+
+                {/* Debugger Panel */}
+                {showDebugger && connectionId && (
+                    <DebuggerPanel
+                        connectionId={connectionId}
+                        currentQuery={query}
+                        breakpoints={currentBreakpoints}
+                        onToggleBreakpoint={toggleBreakpoint}
+                        sessionId={debugSessionId}
+                        setSessionId={setDebugSessionId}
+                        status={debugStatus}
+                        setStatus={setDebugStatus}
+                        currentLine={debugCurrentLine}
+                        setCurrentLine={setDebugCurrentLine}
+                    />
+                )}
 
                 {/* History Sidebar */}
                 {showHistory && (
@@ -1136,21 +1448,73 @@ function QueryPageContent() {
                 />
             )}
 
-            {/* AI SQL Assistant */}
-            {connectionId && connectionInfo && (
-                <AIAssistantPanel
-                    connectionId={connectionId}
-                    connectionInfo={connectionInfo}
-                    schemas={schemas.map(s => s.name)}
-                    tables={Array.from(schemaTables.entries()).flatMap(([schema, tables]) =>
-                        tables.map(t => ({ schema, name: t.name }))
-                    )}
-                    onInsertQuery={(sql) => setQuery(sql)}
-                    onRunQuery={(sql) => {
-                        setQuery(sql);
-                        setTimeout(() => executeQuery(), 100);
+            {/* Procedure Context Menu */}
+            {procedureMenu && (
+                <div
+                    className="fixed bg-card border border-border rounded-lg shadow-lg py-1 z-50 min-w-[180px]"
+                    style={{ top: procedureMenu.y, left: procedureMenu.x }}
+                    onClick={() => setProcedureMenu(null)}
+                >
+                    <button
+                        onClick={() => setQuery(`CALL ${procedureMenu.schemaName}.${procedureMenu.procedureName}();`)}
+                        className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-2"
+                    >
+                        <Play className="w-4 h-4 text-green-500" />
+                        Execute
+                    </button>
+                    <button
+                        onClick={() => setQuery(`-- View definition of ${procedureMenu.procedureName}\nSELECT routine_definition FROM information_schema.routines WHERE routine_name = '${procedureMenu.procedureName}' AND routine_schema = '${procedureMenu.schemaName}';`)}
+                        className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-2"
+                    >
+                        <FileCode className="w-4 h-4 text-blue-500" />
+                        View Definition
+                    </button>
+                    <button
+                        onClick={() => setQuery(`-- Edit procedure (modify and execute)\n-- First, get the current definition:\nSELECT routine_definition FROM information_schema.routines WHERE routine_name = '${procedureMenu.procedureName}';`)}
+                        className="w-full px-4 py-2 text-left text-sm hover:bg-accent flex items-center gap-2"
+                    >
+                        <Wand2 className="w-4 h-4 text-purple-500" />
+                        Edit
+                    </button>
+                    <div className="border-t border-border my-1" />
+                    <button
+                        onClick={() => setQuery(`DROP PROCEDURE IF EXISTS ${procedureMenu.schemaName}.${procedureMenu.procedureName};`)}
+                        className="w-full px-4 py-2 text-left text-sm hover:bg-destructive/10 text-destructive flex items-center gap-2"
+                    >
+                        <X className="w-4 h-4" />
+                        Drop Procedure
+                    </button>
+                </div>
+            )}
+
+            {/* Click outside to close context menus */}
+            {(procedureMenu || contextMenu) && (
+                <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => {
+                        setProcedureMenu(null);
+                        setContextMenu(null);
                     }}
                 />
+            )}
+
+            {/* AI Assistant - Floating Button */}
+            {connectionId && connectionInfo && (
+                <div className="fixed bottom-0 right-0 z-50 p-4">
+                    <AIAssistantPanel
+                        connectionId={connectionId}
+                        connectionInfo={connectionInfo}
+                        schemas={schemas.map(s => s.name)}
+                        tables={Array.from(schemaTables.entries()).flatMap(([schema, tables]) =>
+                            tables.map(t => ({ schema, name: t.name }))
+                        )}
+                        onInsertQuery={(sql) => setQuery(sql)}
+                        onRunQuery={(sql) => {
+                            setQuery(sql);
+                            setTimeout(() => executeQuery(), 100);
+                        }}
+                    />
+                </div>
             )}
         </div>
     );

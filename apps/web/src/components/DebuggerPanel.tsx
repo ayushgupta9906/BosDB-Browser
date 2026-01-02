@@ -1,0 +1,316 @@
+/**
+ * Debugger Panel Component
+ * Integrated debugger controls for query execution
+ */
+
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Play, Pause, StepForward, Square, Bug, Trash2, RotateCcw } from 'lucide-react';
+
+interface DebuggerPanelProps {
+    connectionId: string;
+    currentQuery: string;
+    breakpoints: number[];
+    onToggleBreakpoint: (line: number) => void;
+    sessionId: string | null;
+    setSessionId: (id: string | null) => void;
+    status: 'stopped' | 'running' | 'paused';
+    setStatus: (status: 'stopped' | 'running' | 'paused') => void;
+    currentLine: number | null;
+    setCurrentLine: (line: number | null) => void;
+}
+
+export default function DebuggerPanel({
+    connectionId,
+    currentQuery,
+    breakpoints,
+    onToggleBreakpoint,
+    sessionId,
+    setSessionId,
+    status,
+    setStatus,
+    currentLine,
+    setCurrentLine,
+}: DebuggerPanelProps) {
+    const [variables, setVariables] = useState<{ name: string; value: any }[]>([]);
+
+
+    // Poll session state
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (sessionId && (status === 'running' || status === 'paused')) {
+            interval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/debug/sessions/${sessionId}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        const s = data.session;
+                        setStatus(s.state.status);
+                        setCurrentLine(s.state.currentExecutionPoint?.lineNumber || null);
+
+                        // Capture variables from snapshots or state if available
+                        if (s.state.status === 'paused') {
+                            setVariables(s.state.variables || []);
+                        }
+                    }
+                } catch (e) {
+                    console.error('Failed to poll session state:', e);
+                }
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [sessionId, status]);
+
+    const handlePause = async () => {
+        if (!sessionId) return;
+        try {
+            await fetch(`/api/debug/sessions/${sessionId}/control/pause`, { method: 'POST' });
+            setStatus('paused');
+        } catch (e) {
+            console.error('Failed to pause:', e);
+        }
+    };
+
+    const handleResume = async () => {
+        if (!sessionId) return;
+        try {
+            await fetch(`/api/debug/sessions/${sessionId}/control/resume`, { method: 'POST' });
+            setStatus('running');
+            setCurrentLine(null);
+            setVariables([]);
+        } catch (e) {
+            console.error('Failed to resume:', e);
+        }
+    };
+
+    const handleStep = async () => {
+        if (!sessionId) return;
+        try {
+            await fetch(`/api/debug/sessions/${sessionId}/control/step`, { method: 'POST' });
+            // Polling will update currentLine
+        } catch (e) {
+            console.error('Failed to step:', e);
+        }
+    };
+
+    const handleRewind = async () => {
+        if (!sessionId) return;
+        try {
+            await fetch(`/api/debug/sessions/${sessionId}/control/rewind`, { method: 'POST' });
+            // Polling will update currentLine
+        } catch (e) {
+            console.error('Failed to rewind:', e);
+        }
+    };
+
+    const handleStop = async () => {
+        if (!sessionId) return;
+        try {
+            await fetch(`/api/debug/sessions/${sessionId}`, { method: 'DELETE' });
+            setStatus('stopped');
+            setSessionId(null);
+            setCurrentLine(null);
+            setVariables([]);
+        } catch (e) {
+            console.error('Failed to stop:', e);
+        }
+    };
+
+    const handleStartDebug = async () => {
+        let currentSessionId = sessionId;
+        if (!currentSessionId) {
+            // Create session
+            const res = await fetch('/api/debug/sessions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ connectionId }),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                currentSessionId = data.sessionId;
+                setSessionId(currentSessionId);
+            } else {
+                return;
+            }
+        }
+
+        setStatus('running');
+
+        // Start execution
+        try {
+            fetch(`/api/debug/sessions/${currentSessionId}/execute`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    query: currentQuery,
+                    connectionId
+                }),
+            });
+        } catch (e) {
+            console.error('Failed to start execution:', e);
+            setStatus('stopped');
+        }
+    };
+
+    return (
+        <div className="w-72 border-l border-border bg-background flex flex-col h-full">
+            {/* Header */}
+            <div className="p-3 border-b border-border">
+                <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-semibold flex items-center gap-2">
+                        <Bug className="w-4 h-4" />
+                        Debugger
+                    </h3>
+                    <div className={`px-2 py-0.5 text-xs rounded font-medium ${status === 'running' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                        status === 'paused' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                            'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                        }`}>
+                        {status.toUpperCase()}
+                    </div>
+                </div>
+
+                {/* Controls */}
+                <div className="flex gap-1">
+                    {status === 'stopped' ? (
+                        <button
+                            onClick={handleStartDebug}
+                            disabled={breakpoints.length === 0}
+                            className="flex-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white text-xs rounded flex items-center justify-center gap-1 transition"
+                            title={breakpoints.length === 0 ? "Set breakpoints first" : "Start Debug"}
+                        >
+                            <Play className="w-3.5 h-3.5" />
+                            Start Debug
+                        </button>
+                    ) : (
+                        <>
+                            {status === 'paused' ? (
+                                <button
+                                    onClick={handleResume}
+                                    className="p-1.5 bg-green-600 hover:bg-green-700 text-white rounded transition"
+                                    title="Resume (F8)"
+                                >
+                                    <Play className="w-4 h-4" />
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handlePause}
+                                    className="p-1.5 bg-yellow-600 hover:bg-yellow-700 text-white rounded transition"
+                                    title="Pause"
+                                >
+                                    <Pause className="w-4 h-4" />
+                                </button>
+                            )}
+
+                            <button
+                                onClick={handleStep}
+                                disabled={status !== 'paused'}
+                                className="p-1.5 hover:bg-accent rounded transition disabled:opacity-50"
+                                title="Step Over (F10)"
+                            >
+                                <StepForward className="w-4 h-4" />
+                            </button>
+
+                            <button
+                                onClick={handleRewind}
+                                disabled={status !== 'paused'}
+                                className="p-1.5 hover:bg-accent rounded transition disabled:opacity-50"
+                                title="Rewind Step (Ctrl+F10)"
+                            >
+                                <RotateCcw className="w-4 h-4" />
+                            </button>
+
+                            <button
+                                onClick={handleStop}
+                                className="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 rounded transition"
+                                title="Stop (Shift+F5)"
+                            >
+                                <Square className="w-4 h-4" />
+                            </button>
+                        </>
+                    )}
+                </div>
+            </div>
+
+            {/* Current Line */}
+            {currentLine && (
+                <div className="px-3 py-2 bg-yellow-50 dark:bg-yellow-900/20 border-b border-border">
+                    <p className="text-xs text-yellow-700 dark:text-yellow-400">
+                        ⏸️ Paused at <strong>Line {currentLine}</strong>
+                    </p>
+                </div>
+            )}
+
+            {/* Breakpoints */}
+            <div className="p-3 border-b border-border">
+                <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-xs font-semibold text-muted-foreground">BREAKPOINTS</h4>
+                </div>
+
+                {breakpoints.length === 0 ? (
+                    <p className="text-xs text-muted-foreground italic">
+                        Click line numbers to set breakpoints
+                    </p>
+                ) : (
+                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                        {breakpoints.sort((a, b) => a - b).map(line => (
+                            <div
+                                key={line}
+                                className={`flex items-center justify-between text-xs py-1 px-2 rounded ${currentLine === line
+                                    ? 'bg-yellow-100 dark:bg-yellow-900/30'
+                                    : 'bg-red-50 dark:bg-red-900/20'
+                                    }`}
+                            >
+                                <span className="flex items-center gap-1">
+                                    <span className="w-2 h-2 bg-red-500 rounded-full" />
+                                    Line {line}
+                                    {currentLine === line && <span className="text-yellow-600">← here</span>}
+                                </span>
+                                {onToggleBreakpoint && (
+                                    <button
+                                        onClick={() => onToggleBreakpoint(line)}
+                                        className="text-red-600 hover:text-red-800 dark:text-red-400"
+                                    >
+                                        ×
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Variables */}
+            <div className="flex-1 p-3 overflow-y-auto">
+                <h4 className="text-xs font-semibold mb-2 text-muted-foreground">VARIABLES</h4>
+                {variables.length === 0 ? (
+                    <p className="text-xs text-muted-foreground italic">
+                        {status === 'paused' ? 'No variables in scope' : 'Pause execution to inspect variables'}
+                    </p>
+                ) : (
+                    <div className="space-y-1">
+                        {variables.map((v, i) => (
+                            <div key={i} className="text-xs font-mono bg-accent/50 px-2 py-1 rounded">
+                                <span className="text-blue-600 dark:text-blue-400">{v.name}</span>
+                                {' = '}
+                                <span className="text-green-600 dark:text-green-400">
+                                    {typeof v.value === 'object' ? JSON.stringify(v.value) : String(v.value)}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-3 border-t border-border text-xs text-muted-foreground">
+                <p className="mb-1">
+                    {sessionId ? `Session: ${sessionId.slice(0, 8)}...` : 'No active session'}
+                </p>
+                <p className="text-[10px] opacity-75">
+                    Shortcuts: F5 Start, F8 Resume, F10 Step
+                </p>
+            </div>
+        </div>
+    );
+}
