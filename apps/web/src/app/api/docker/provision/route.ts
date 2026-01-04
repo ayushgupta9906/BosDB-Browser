@@ -19,7 +19,13 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        const body = await request.json();
+        let body;
+        try {
+            body = await request.json();
+        } catch (e) {
+            return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+        }
+
         const { type, name, autoStart } = body;
 
         // Validate inputs
@@ -32,6 +38,7 @@ export async function POST(request: NextRequest) {
         }
 
         // ✅ FOR POSTGRESQL: Return Railway deployed database instead of Docker
+        // This works on both local and Vercel without Docker
         if (type === 'postgres') {
             console.log(`[Railway] Using deployed Railway PostgreSQL for "${name}"`);
 
@@ -67,12 +74,24 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        // For other database types, use Docker as before
+        // For other database types, check if we're on Vercel (no Docker)
+        const isVercel = process.env.VERCEL === '1';
+
+        if (isVercel) {
+            // On Vercel, we can't use Docker for other databases
+            return NextResponse.json({
+                error: `Docker provisioning not available on Vercel. Please use Railway or external ${type} database and add it manually.`,
+                suggestion: 'Use "Add External Connection" instead'
+            }, { status: 503 });
+        }
+
+        // For other database types on local/non-Vercel, use Docker as before
         // Check Docker is available
         const isDockerAvailable = await checkDockerAvailable();
         if (!isDockerAvailable) {
             return NextResponse.json({
-                error: 'Docker is not running. Please start Docker and try again.'
+                error: 'Docker is not running. Please start Docker and try again.',
+                suggestion: 'Start Docker Desktop or use Railway PostgreSQL'
             }, { status: 503 });
         }
 
@@ -106,8 +125,11 @@ export async function POST(request: NextRequest) {
 
     } catch (error: any) {
         console.error('[Docker API] Failed to provision database:', error);
+        // Always return valid JSON, even on error
         return NextResponse.json({
-            error: error.message || 'Failed to provision database'
+            success: false,
+            error: error.message || 'Failed to provision database',
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
         }, { status: 500 });
     }
 }
