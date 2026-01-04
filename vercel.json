@@ -10,18 +10,6 @@
     "regions": [
         "iad1"
     ],
-    "env": {
-        "MONGODB_URI": "@mongodb-uri",
-        "ENCRYPTION_MASTER_KEY": "@encryption-master-key",
-        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": "@stripe-publishable-key"
-    },
-    "build": {
-        "env": {
-            "MONGODB_URI": "@mongodb-uri",
-            "ENCRYPTION_MASTER_KEY": "@encryption-master-key",
-            "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": "@stripe-publishable-key"
-        }
-    },
     "rewrites": [
         {
             "source": "/api/:path*",
