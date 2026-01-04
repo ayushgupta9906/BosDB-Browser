@@ -26,6 +26,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV PORT=3000
 
 # Copy built application
 COPY --from=builder /app/apps/web/.next/standalone ./
@@ -35,6 +36,11 @@ COPY --from=builder /app/apps/web/public ./apps/web/public
 # Create data directory
 RUN mkdir -p /app/apps/web/.bosdb-data
 
-EXPOSE 3000
+# Add health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:${PORT}/', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"
+
+EXPOSE ${PORT}
 
 CMD ["node", "apps/web/server.js"]
+
