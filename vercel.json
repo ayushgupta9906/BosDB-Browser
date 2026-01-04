@@ -1,6 +1,5 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "name": "bosdb-browser",
     "version": 2,
     "buildCommand": "cd apps/web && npm run build",
     "outputDirectory": "apps/web/.next",
@@ -10,18 +9,6 @@
     "regions": [
         "iad1"
     ],
-    "env": {
-        "MONGODB_URI": "@mongodb-uri",
-        "ENCRYPTION_MASTER_KEY": "@encryption-master-key",
-        "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": "@stripe-publishable-key"
-    },
-    "build": {
-        "env": {
-            "MONGODB_URI": "@mongodb-uri",
-            "ENCRYPTION_MASTER_KEY": "@encryption-master-key",
-            "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": "@stripe-publishable-key"
-        }
-    },
     "rewrites": [
         {
             "source": "/api/:path*",
@@ -50,11 +37,5 @@
                 }
             ]
         }
-    ],
-    "functions": {
-        "apps/web/src/app/api/**/*.ts": {
-            "maxDuration": 60,
-            "memory": 1024
-        }
-    }
+    ]
 }
