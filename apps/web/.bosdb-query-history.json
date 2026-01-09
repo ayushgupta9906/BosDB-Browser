@@ -3,30 +3,6 @@
     "connectionId": "conn_1767358132773_4q9xyimqd",
     "connectionName": "My Postgres Database",
     "query": "SELECT * FROM information_schema.tables LIMIT 10",
-    "executedAt": "2026-01-02T12:49:08.838Z",
-    "executionTime": 11,
-    "rowCount": 10,
-    "success": true,
-    "userEmail": "ayush@flipkart.com",
-    "orgId": "flipkart.com",
-    "id": "history_1767358148839_eoznndj6s"
-  },
-  {
-    "connectionId": "conn_1767358132773_4q9xyimqd",
-    "connectionName": "My Postgres Database",
-    "query": "SELECT * FROM information_schema.tables LIMIT 10",
-    "executedAt": "2026-01-02T12:49:09.678Z",
-    "executionTime": 5,
-    "rowCount": 10,
-    "success": true,
-    "userEmail": "ayush@flipkart.com",
-    "orgId": "flipkart.com",
-    "id": "history_1767358149678_rd29pdddm"
-  },
-  {
-    "connectionId": "conn_1767358132773_4q9xyimqd",
-    "connectionName": "My Postgres Database",
-    "query": "SELECT * FROM information_schema.tables LIMIT 10",
     "executedAt": "2026-01-02T12:49:10.409Z",
     "executionTime": 4,
     "rowCount": 10,
@@ -1231,5 +1207,29 @@
     "userEmail": "ritvik@flipkart.com",
     "orgId": "flipkart.com",
     "id": "history_1767969567241_0qq9xfami"
+  },
+  {
+    "connectionId": "conn_1767970024628_8wwd4qwvm",
+    "connectionName": "My Mariadb Database",
+    "query": "SELECT * FROM information_schema.tables LIMIT 10",
+    "executedAt": "2026-01-09T14:47:09.819Z",
+    "executionTime": 252,
+    "rowCount": 10,
+    "success": true,
+    "userEmail": "ritvik@flipkart.com",
+    "orgId": "flipkart.com",
+    "id": "history_1767970029819_5ly03wqf6"
+  },
+  {
+    "connectionId": "conn_1767816535657_zi7bq44xq",
+    "connectionName": "My Postgres Database",
+    "query": "SELECT * FROM information_schema.tables LIMIT 10",
+    "executedAt": "2026-01-09T15:11:27.855Z",
+    "executionTime": 872,
+    "rowCount": 10,
+    "success": true,
+    "userEmail": "ritvik@flipkart.com",
+    "orgId": "flipkart.com",
+    "id": "history_1767971487856_202de2msf"
   }
 ]
