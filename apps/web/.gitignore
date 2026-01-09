@@ -1,4 +1,6 @@
 logs/
+!logs/**/
+!logs/**/.gitkeep
 .env
 node_modules
 .turbo
