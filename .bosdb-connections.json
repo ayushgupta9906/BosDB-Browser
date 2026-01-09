@@ -346,20 +346,21 @@
     "id": "conn_1767819853197_sop3mw17e",
     "name": "My Oracle Database",
     "type": "oracle",
-    "host": "localhost",
+    "host": "trolley.proxy.rlwy.net",
     "port": 49717,
     "database": "XE",
     "credentials": "s8mVdfifW5UZ4KHHNz5WX0l2jftmxCR4wdeO1amK8PM+gUcgVCakwVLolODMTPnslV6mmoSlkjtlZi4ER5WXhDlxNyHzLyrmDaok1l1VDg==",
     "readOnly": false,
     "userEmail": "ayush@flipkart.com",
     "organizationId": "flipkart.com",
-    "createdAt": "2026-01-07T21:04:13.197Z"
+    "createdAt": "2026-01-07T21:04:13.197Z",
+    "ssl": true
   },
   "conn_1767820047739_9pmbmmegl": {
     "id": "conn_1767820047739_9pmbmmegl",
     "name": "My Oracle Database",
     "type": "oracle",
-    "host": "localhost",
+    "host": "trolley.proxy.rlwy.net",
     "port": 49717,
     "database": "XEPDB1",
     "credentials": "Qxno907wgkkCXrSkYZwPJv1dCkVB2qtn2b2hiMSqng9BcxFIJ3F0P0EOO+IRjxnJeyPMfZTr6wsHuTD7tNz2R1N3dYqvsD8iCRJ4wpbQzw==",
@@ -369,13 +370,14 @@
     "createdAt": "2026-01-07T21:07:27.739Z",
     "sharedWith": [
       "ritvik"
-    ]
+    ],
+    "ssl": true
   },
   "conn_1767820285653_jptkg3g0v": {
     "id": "conn_1767820285653_jptkg3g0v",
     "name": "My Oracle Database",
     "type": "oracle",
-    "host": "localhost",
+    "host": "trolley.proxy.rlwy.net",
     "port": 49717,
     "database": "XE",
     "credentials": "AMFG4/YvOauVcdTi+c2iDXCVRjx0m4CyWMSVLRY4NQpgAtx5SyTsKq6DzD0s0Deq0kEIwqBnGA6js6AYFw0CWAptDtPrSZo9cAXyV+Tnfg==",
@@ -385,7 +387,8 @@
     "createdAt": "2026-01-07T21:11:25.653Z",
     "sharedWith": [
       "ritvik"
-    ]
+    ],
+    "ssl": true
   },
   "conn_1767964983641_wkl9uof9c": {
     "id": "conn_1767964983641_wkl9uof9c",
@@ -489,13 +492,69 @@
     "id": "conn_1767967526550_0v1cpy0oa",
     "name": "My Postgres Database",
     "type": "postgres",
-    "host": "localhost",
+    "host": "switchyard.proxy.rlwy.net",
     "port": 50346,
     "database": "railway",
     "credentials": "AM80ZaQM7Yo3lNUdVFeUmdjwPY/U+39k5TQ4GfuTRZIMBXcGVqrkxLC4DtNiJOA1AprdM0NEMVzARb5D298EqAi0PeeWM34XZPjXOm4aQ7bVNJazyfN90ppopbk8J962Oy+r11A=",
     "readOnly": false,
     "userEmail": "ritvik@flipkart.com",
     "organizationId": "flipkart.com",
-    "createdAt": "2026-01-09T14:05:26.550Z"
+    "createdAt": "2026-01-09T14:05:26.550Z",
+    "ssl": true
+  },
+  "railway-mariadb": {
+    "id": "railway-mariadb",
+    "name": "Railway MariaDB (Direct)",
+    "type": "mariadb",
+    "host": "metro.proxy.rlwy.net",
+    "port": 54136,
+    "database": "railway",
+    "credentials": "v0O+JmOYNeRQgyyLSHcVmtGZvjgBljRz0RTIvM9K1VAC3wPodjhMHmSF7Ps4yfb8imo7wNJ7jyDQQwJtmgZj/nHi2R7dncXGNwsZxCqJC9o3kelTAvR9Ly4nRcuAn+irIIOsGA==",
+    "ssl": true,
+    "readOnly": false,
+    "userEmail": "system",
+    "organizationId": "system",
+    "createdAt": "2026-01-09T14:37:16.820Z"
+  },
+  "railway-mongo": {
+    "id": "railway-mongo",
+    "name": "Railway MongoDB (Direct)",
+    "type": "mongodb",
+    "host": "mainline.proxy.rlwy.net",
+    "port": 12858,
+    "database": "test",
+    "credentials": "hIpKAEoQU7b+Ik3tov9OTqo3iuYkn9/Jd2I28voOcMU/P8VO27Nb0tDZcXhy0TYQCk6GteoqOHP3qlkrSYGeKLykxSn07Xl36Oy/SaO3w+zJqvNPloVXi+3be1qQZH+KlVo=",
+    "ssl": true,
+    "readOnly": false,
+    "userEmail": "system",
+    "organizationId": "system",
+    "createdAt": "2026-01-09T14:37:16.821Z"
+  },
+  "railway-oracle": {
+    "id": "railway-oracle",
+    "name": "Railway Oracle (Direct)",
+    "type": "oracle",
+    "host": "trolley.proxy.rlwy.net",
+    "port": 49717,
+    "database": "XE",
+    "credentials": "k1jMSXxjCGuMDxTU4KXZicErKgMYlhY1JhuQq/7YUXZTtvouAeqxetXyi7LHrm42FWUM5ezdqmN0JPt2+AU6JC6+A51liIbFoyuyguAnhA==",
+    "ssl": true,
+    "readOnly": false,
+    "userEmail": "system",
+    "organizationId": "system",
+    "createdAt": "2026-01-09T14:37:16.821Z"
+  },
+  "conn_1767969436829_j21x67dzj": {
+    "id": "conn_1767969436829_j21x67dzj",
+    "name": "My Mariadb Database",
+    "type": "mariadb",
+    "host": "localhost",
+    "port": 54136,
+    "database": "railway",
+    "credentials": "dwD0/WO2d4aqcPUW2xt3PGhUVpiwxVfHvkeV5MSpJamt/5GzggDUgEXC1Wrx5suKI+ZLhwxm7YNoppOC+z4FlAcnGL9JkxussQDB0D2FIp9E5dGJ2mcg5J1H4ijCDhVcnGupYA==",
+    "readOnly": false,
+    "userEmail": "ritvik@flipkart.com",
+    "organizationId": "flipkart.com",
+    "createdAt": "2026-01-09T14:37:16.829Z"
   }
 }

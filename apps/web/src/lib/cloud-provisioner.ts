@@ -54,6 +54,7 @@ function parseConnectionUrl(url: string | undefined, defaultHost: string, defaul
 }
 
 // Parse env vars
+// Parse env vars
 const pgConfig = parseConnectionUrl(process.env.CLOUD_POSTGRES_URL, 'switchyard.proxy.rlwy.net', 50346);
 const mysqlConfig = parseConnectionUrl(process.env.CLOUD_MYSQL_URL, 'metro.proxy.rlwy.net', 55276);
 const mariadbConfig = parseConnectionUrl(process.env.CLOUD_MARIADB_URL, 'metro.proxy.rlwy.net', 54136);

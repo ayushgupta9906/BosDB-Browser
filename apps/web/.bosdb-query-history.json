@@ -1,25 +1,5 @@
 [
   {
-    "connectionId": "conn_1767292847494_6f36r1gat",
-    "connectionName": "My Postgres Database",
-    "query": "SELECT * FROM information_schema.tables LIMIT 10",
-    "executedAt": "2026-01-02T06:23:40.805Z",
-    "executionTime": 11,
-    "rowCount": 10,
-    "success": true,
-    "id": "history_1767335020806_6n7x20wpc"
-  },
-  {
-    "connectionId": "conn_1767292847494_6f36r1gat",
-    "connectionName": "My Postgres Database",
-    "query": "SELECT * FROM public.countries LIMIT 100",
-    "executedAt": "2026-01-02T06:23:48.014Z",
-    "executionTime": 5,
-    "rowCount": 5,
-    "success": true,
-    "id": "history_1767335028016_w2xbrcary"
-  },
-  {
     "connectionId": "conn_1767358132773_4q9xyimqd",
     "connectionName": "My Postgres Database",
     "query": "SELECT * FROM information_schema.tables LIMIT 10",
@@ -1153,5 +1133,103 @@
     "userEmail": "ritvik@flipkart.com",
     "orgId": "flipkart.com",
     "id": "history_1767967533001_qsjfkat3d"
+  },
+  {
+    "connectionId": "conn_1767969436829_j21x67dzj",
+    "connectionName": "My Mariadb Database",
+    "query": "SELECT * FROM information_schema.tables LIMIT 10",
+    "executedAt": "2026-01-09T14:37:34.166Z",
+    "executionTime": 272,
+    "rowCount": 10,
+    "success": true,
+    "userEmail": "ritvik@flipkart.com",
+    "orgId": "flipkart.com",
+    "id": "history_1767969454167_8c3zjdhx0"
+  },
+  {
+    "connectionId": "conn_1767969436829_j21x67dzj",
+    "connectionName": "My Mariadb Database",
+    "query": "CREATE TABLE users (\r\n    id INT AUTO_INCREMENT PRIMARY KEY,\r\n    name VARCHAR(100) NOT NULL,\r\n    email VARCHAR(150) UNIQUE NOT NULL,\r\n    password VARCHAR(255) NOT NULL,\r\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\r\n)",
+    "executedAt": "2026-01-09T14:38:15.093Z",
+    "executionTime": 294,
+    "rowCount": 0,
+    "success": true,
+    "userEmail": "ritvik@flipkart.com",
+    "orgId": "flipkart.com",
+    "id": "history_1767969495095_2c5ojg4w7"
+  },
+  {
+    "connectionId": "conn_1767969436829_j21x67dzj",
+    "connectionName": "My Mariadb Database",
+    "query": "-- INSERT\r\nINSERT INTO users (name, email, password)\r\nVALUES ('Ayush', 'ayush@example.com', 'hashed_password')",
+    "executedAt": "2026-01-09T14:38:43.019Z",
+    "executionTime": 273,
+    "rowCount": 0,
+    "success": true,
+    "userEmail": "ritvik@flipkart.com",
+    "orgId": "flipkart.com",
+    "id": "history_1767969523019_sf39gtzqr"
+  },
+  {
+    "connectionId": "conn_1767969436829_j21x67dzj",
+    "connectionName": "My Mariadb Database",
+    "query": "-- SELECT (all rows)\r\nSELECT * FROM users",
+    "executedAt": "2026-01-09T14:38:43.296Z",
+    "executionTime": 249,
+    "rowCount": 1,
+    "success": true,
+    "userEmail": "ritvik@flipkart.com",
+    "orgId": "flipkart.com",
+    "id": "history_1767969523296_r5w39e21p"
+  },
+  {
+    "connectionId": "conn_1767969436829_j21x67dzj",
+    "connectionName": "My Mariadb Database",
+    "query": "-- SELECT specific columns\r\nSELECT id, name, email FROM users",
+    "executedAt": "2026-01-09T14:38:43.593Z",
+    "executionTime": 252,
+    "rowCount": 1,
+    "success": true,
+    "userEmail": "ritvik@flipkart.com",
+    "orgId": "flipkart.com",
+    "id": "history_1767969523593_7cuzejfzy"
+  },
+  {
+    "connectionId": "conn_1767969436829_j21x67dzj",
+    "connectionName": "My Mariadb Database",
+    "query": "-- SELECT with condition\r\nSELECT * FROM users WHERE email = 'ayus*",
+    "executedAt": "2026-01-09T14:38:43.880Z",
+    "executionTime": 0,
+    "rowCount": 0,
+    "success": false,
+    "error": "Query execution failed: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''ayus*' at line 2",
+    "userEmail": "ritvik@flipkart.com",
+    "orgId": "flipkart.com",
+    "id": "history_1767969523880_xly014042"
+  },
+  {
+    "connectionId": "conn_1767969436829_j21x67dzj",
+    "connectionName": "My Mariadb Database",
+    "query": "SELECT * FROM users",
+    "executedAt": "2026-01-09T14:38:48.058Z",
+    "executionTime": 258,
+    "rowCount": 1,
+    "success": true,
+    "userEmail": "ritvik@flipkart.com",
+    "orgId": "flipkart.com",
+    "id": "history_1767969528058_s0f1uss11"
+  },
+  {
+    "connectionId": "conn_1767969436829_j21x67dzj",
+    "connectionName": "My Mariadb Database",
+    "query": "-- INSERT\r\nINSERT INTO users (name, email, password)\r\nVALUES ('hj', 'ayush@example.com', 'hashed_password')",
+    "executedAt": "2026-01-09T14:39:27.240Z",
+    "executionTime": 0,
+    "rowCount": 0,
+    "success": false,
+    "error": "Query execution failed: Duplicate entry 'ayush@example.com' for key 'email'",
+    "userEmail": "ritvik@flipkart.com",
+    "orgId": "flipkart.com",
+    "id": "history_1767969567241_0qq9xfami"
   }
 ]
