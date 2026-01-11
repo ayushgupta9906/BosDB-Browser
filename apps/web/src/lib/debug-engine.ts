@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SIMPLE Working Debug Engine
  * Stores sessions globally and executes queries step-by-step
  */
@@ -350,39 +350,3 @@ export function getAllSessions(): DebugSession[] {
 export function deleteSession(sessionId: string): void {
     SESSIONS.delete(sessionId);
 }
-
-/**
- * Compatibility wrapper for API routes
- * Provides an object-oriented interface over the functional engine
- */
-export function getDebugEngine() {
-    return {
-        getSession: getDebugSession,
-        createSession: createDebugSession,
-        setBreakpoint: (sessionId: string, type: string, config: any) => {
-            const session = getDebugSession(sessionId);
-            if (!session) return null;
-
-            // Basic support for line breakpoints
-            const line = config.line || config.lineNumber;
-            if (typeof line === 'number') {
-                if (!session.breakpoints.includes(line)) {
-                    session.breakpoints.push(line);
-                    session.breakpoints.sort((a, b) => a - b);
-                }
-                return { id: `bp-${line}`, type, config: { line } };
-            }
-            return { id: `unknown-${Date.now()}`, type, config };
-        },
-        getBreakpoints: (sessionId: string) => {
-            const session = getDebugSession(sessionId);
-            if (!session) return [];
-            return session.breakpoints.map(line => ({
-                id: `bp-${line}`,
-                type: 'line',
-                config: { line }
-            }));
-        }
-    };
-}
-
