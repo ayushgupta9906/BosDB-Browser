@@ -1,12 +1,7 @@
 logs/
-<<<<<<< Updated upstream
-=======
-
-
 !logs/**/
 !logs/**/.gitkeep
 
->>>>>>> Stashed changes
 .env
 node_modules
 .turbo
@@ -36,5 +31,8 @@ docker-compose.deploy.yml
 docker-compose.prod.yml
 apps/web/.next
 .next/
+<<<<<<< HEAD
+=======
 node_modules/
 .turbo
+>>>>>>> 1d71269894da4f45c33bfe44319a4b20b669089e
