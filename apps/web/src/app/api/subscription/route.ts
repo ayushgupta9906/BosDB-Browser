@@ -162,6 +162,33 @@ export async function POST(request: NextRequest) {
             org = adminOrg;
         }
 
+        // Auto-create demo organizations if missing
+        if (!org && orgId === 'demo-individual-org') {
+            console.log('[Subscription API] Auto-creating demo individual org');
+            const demoOrg: any = {
+                id: 'demo-individual-org',
+                name: 'Demo Individual Workspace',
+                type: 'individual',
+                adminUserId: 'demo-individual',
+                subscription: { plan: 'free', isTrial: false }
+            };
+            await saveOrganization(demoOrg);
+            org = demoOrg;
+        }
+
+        if (!org && orgId === 'demo-company-org') {
+            console.log('[Subscription API] Auto-creating demo company org');
+            const demoOrg: any = {
+                id: 'demo-company-org',
+                name: 'Demo Company Workspace',
+                type: 'enterprise',
+                adminUserId: 'demo-company',
+                subscription: { plan: 'free', isTrial: false }
+            };
+            await saveOrganization(demoOrg);
+            org = demoOrg;
+        }
+
         if (!org) {
             return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
         }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import { login, getAllUsers, initializeDefaultUsers, registerUser } from '@/lib/auth';
 
 // Define User type locally to resolve lint error or import it if exported
@@ -19,6 +19,7 @@ interface User {
 export default function LoginPage() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [showRegister, setShowRegister] = useState(false);
@@ -47,27 +48,9 @@ export default function LoginPage() {
           // No need to deduplicate - email is globally unique
           setUsers(data.users || []);
 
-          // If no users exist on server, create default admin via API
-          if (data.users && data.users.length === 0) {
-            await fetch('/api/auth', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                action: 'register',
-                id: 'admin',
-                name: 'Administrator',
-                email: 'admin@bosdb.com',
-                password: 'Admin@123',
-                role: 'admin',
-                // Status handled by API logic for first user
-              })
-            });
-            // Refresh
-            const retry = await fetch('/api/auth');
-            const retryData = await retry.json();
-            // No need to deduplicate - email is globally unique
-            setUsers(retryData.users || []);
-          }
+          // Auto-seed removed as per user request (Super Admin created manually/internally)
+
+
         }
       } catch (err) {
         console.error('Failed to fetch users', err);
@@ -104,6 +87,8 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
+        // Regular employee login - always go to dashboard
+        // Super admin must use /super-admin/login
         localStorage.setItem('bosdb_current_user', JSON.stringify(data.user));
         router.push('/dashboard');
       } else {
@@ -360,6 +345,31 @@ export default function LoginPage() {
             >
               Register New User
             </button>
+
+            {/* Demo Credentials */}
+            <div className="mt-6 pt-6 border-t border-gray-700">
+              <p className="text-xs text-gray-400 text-center mb-3">
+                Want to test? Use these demo accounts:
+              </p>
+              <div className="space-y-2">
+                <div className="text-center">
+                  <p className="text-xs text-gray-500">Individual: <span className="text-gray-300 font-mono">demo@gmail.com</span> / <span className="text-gray-300 font-mono">Demo123!</span></p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-gray-500">Enterprise: <span className="text-gray-300 font-mono">demo@company.com</span> / <span className="text-gray-300 font-mono">Demo123!</span></p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-gray-700 text-center">
+              <Link
+                href="/super-admin/login"
+                className="text-xs text-purple-400 hover:text-purple-300 transition-colors inline-flex items-center justify-center gap-1 mx-auto"
+              >
+                <ShieldCheck className="h-3 w-3" />
+                Privileged Login (Super Admin)
+              </Link>
+            </div>
           </div>
 
 
@@ -405,11 +415,6 @@ export default function LoginPage() {
                   <div className="text-xs opacity-70">For organizations</div>
                 </button>
               </div>
-              {newUser.accountType === 'enterprise' && (
-                <p className="mt-2 text-xs text-gray-400">
-                  💡 All users with the same email domain will be grouped together
-                </p>
-              )}
             </div>
 
             <div className="space-y-4 mb-6">
@@ -494,11 +499,6 @@ export default function LoginPage() {
                       Organization Admin
                     </button>
                   </div>
-                  <p className="mt-2 text-[10px] text-gray-500 italic">
-                    {newUser.role === 'admin'
-                      ? "⚠️ Admin requests for existing teams require approval from a current Admin."
-                      : "✅ Membership is usually approved automatically by domain."}
-                  </p>
                 </div>
               )}
 

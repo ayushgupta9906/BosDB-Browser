@@ -4,10 +4,12 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { getCurrentUser, promptForUserIfNeeded } from '@/lib/user-context';
+import { useToast } from '@/components/ToastProvider';
 
 function VersionControlContent() {
     const searchParams = useSearchParams();
     const connectionId = searchParams?.get('connection');
+    const toast = useToast();
 
     const [commits, setCommits] = useState<any[]>([]);
     const [branches, setBranches] = useState<any[]>([]);
@@ -57,20 +59,28 @@ function VersionControlContent() {
     const loadAllData = async () => {
         setLoading(true);
         try {
-            const commitRes = await fetch(`/api/vcs/commit?connectionId=${connectionId}`);
-            const commitData = await commitRes.json();
-            setCommits(commitData.commits || []);
+            // Fetch all API calls in parallel for better performance
+            const [commitRes, branchRes, pendingRes] = await Promise.all([
+                fetch(`/api/vcs/commit?connectionId=${connectionId}`),
+                fetch(`/api/vcs/branches?connectionId=${connectionId}`),
+                fetch(`/api/vcs/pending?connectionId=${connectionId}`)
+            ]);
 
-            const branchRes = await fetch(`/api/vcs/branches?connectionId=${connectionId}`);
-            const branchData = await branchRes.json();
+            // Parse all responses in parallel
+            const [commitData, branchData, pendingData] = await Promise.all([
+                commitRes.json(),
+                branchRes.json(),
+                pendingRes.json()
+            ]);
+
+            // Update state with fetched data
+            setCommits(commitData.commits || []);
             setBranches(branchData.branches || [{ name: 'main', commitId: '', protected: true }]);
             setCurrentBranch(branchData.currentBranch || 'main');
-
-            const pendingRes = await fetch(`/api/vcs/pending?connectionId=${connectionId}`);
-            const pendingData = await pendingRes.json();
             setPending(pendingData.changes || []);
         } catch (error) {
             console.error('Error loading data:', error);
+            toast.error('Failed to load version control data.');
         } finally {
             setLoading(false);
         }
@@ -101,12 +111,14 @@ function VersionControlContent() {
             })
         });
 
-        if (res.ok) {
-            alert(`✅ Commit created by ${user.name} on branch ${currentBranch}!`);
+        const result = await res.json();
+
+        if (result.success) {
+            toast.success(`Commit created by ${user.name} on branch ${currentBranch}!`);
             await loadAllData();
         } else {
-            const error = await res.json();
-            alert(`❌ Failed to create commit: ${error.error || 'Unknown error'}`);
+            const error = result as { error: string };
+            toast.error(`Failed to create commit: ${error.error || 'Unknown error'}`);
             console.error('Commit error:', error);
         }
     };
@@ -134,15 +146,17 @@ function VersionControlContent() {
                 })
             });
 
-            if (res.ok) {
-                alert(`✅ Successfully reverted commit ${commitId.substring(0, 8)}!`);
+            const result = await res.json();
+
+            if (result.success) {
+                toast.success(`Successfully reverted commit ${commitId.substring(0, 8)}!`);
                 await loadAllData();
             } else {
-                const error = await res.json();
-                alert(`❌ Revert failed: ${error.error}`);
+                const error = result as { error: string };
+                toast.error(`Revert failed: ${error.error}`);
             }
-        } catch (error) {
-            alert(`❌ Error during revert: ${error}`);
+        } catch (error: any) {
+            toast.error(`Error during revert: ${error}`);
         }
     };
 
@@ -156,9 +170,14 @@ function VersionControlContent() {
             body: JSON.stringify({ connectionId, name, action: 'create' })
         });
 
-        if (res.ok) {
-            alert('✅ Branch created!');
+        const result = await res.json();
+
+        if (result.success) {
+            toast.success('Branch created!');
             await loadAllData();
+        } else {
+            const error = result as { error: string };
+            toast.error(`Failed to create branch: ${error.error || 'Unknown error'}`);
         }
     };
 
@@ -169,9 +188,15 @@ function VersionControlContent() {
             body: JSON.stringify({ connectionId, name, action: 'checkout' })
         });
 
-        if (res.ok) {
-            alert(`✅ Switched to ${name}`);
+        const result = await res.json();
+
+        if (result.success) {
+            toast.success(`Switched to ${name}`);
             setCurrentBranch(name);
+            await loadAllData();
+        } else {
+            const error = result as { error: string };
+            toast.error(`Failed to checkout branch: ${error.error || 'Unknown error'}`);
         }
     };
 
@@ -203,45 +228,45 @@ function VersionControlContent() {
                 })
             });
 
-            if (res.ok) {
-                const result = await res.json();
-                alert(`✅ Rolled back to revision ${targetRevision} by ${user.name}!\n\nReverted to: ${result.targetCommit?.message}`);
+            const result = await res.json();
+
+            if (result.success) {
+                toast.success(`Rolled back to revision ${targetRevision} by ${user.name}!\n\nReverted to: ${result.targetCommit?.message}`);
                 await loadAllData();
             } else {
-                const error = await res.json();
-                alert(`❌ Rollback failed: ${error.error}`);
+                const error = result as { error: string };
+                toast.error(`Rollback failed: ${error.error}`);
             }
-        } catch (error) {
-            alert(`❌ Error: ${error}`);
+        } catch (error: any) {
+            toast.error(`Error: ${error}`);
         }
     };
 
     const compareRevisions = async () => {
         if (commits.length < 2) {
-            alert('Need at least 2 commits to compare revisions. Execute some queries first!');
+            toast.error('Need at least 2 commits to compare revisions. Execute some queries first!');
             return;
         }
 
         try {
             const res = await fetch(`/api/vcs/rollback/diff?connectionId=${connectionId}&fromRevision=${compareFrom}&toRevision=${compareTo}`);
+            const result = await res.json();
 
             if (res.ok) {
-                const result = await res.json();
-
                 if (result.error) {
-                    alert(`Cannot compare: ${result.error}`);
+                    toast.error(`Cannot compare: ${result.error}`);
                     return;
                 }
 
                 setDiffResult(result);
                 setActiveTab('compare');
             } else {
-                const error = await res.json();
-                alert(`Failed to compare revisions: ${error.error || 'Unknown error'}`);
+                const error = result as { error: string };
+                toast.error(`Failed to compare revisions: ${error.error || 'Unknown error'}`);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Compare error:', error);
-            alert(`Error comparing revisions: ${String(error)}`);
+            toast.error(`Error comparing revisions: ${String(error)}`);
         }
     };
 

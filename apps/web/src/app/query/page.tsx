@@ -19,13 +19,13 @@ import TableDesigner from '@/components/schema/TableDesigner';
 import { SaveQueryModal } from '@/components/SaveQueryModal';
 import { ExportModal } from '@/components/ExportModal';
 import { ImportModal } from '@/components/ImportModal';
-import { SQLTemplateModal } from '@/components/SQLTemplateModal';
 import { TableContextMenu } from '@/components/TableContextMenu';
 import { QueryPlanViewer } from '@/components/QueryPlanViewer';
 import { ResultsToolbar } from '@/components/ResultsToolbar';
 import { DataEditor } from '@/components/DataEditor';
 import { AIAssistantPanel } from '@/components/AIAssistantPanel';
 import { QueryHistory } from '@/components/QueryHistory';
+import { useToast } from '@/components/ToastProvider';
 
 // Define QueryResult interface
 interface QueryResult {
@@ -183,6 +183,7 @@ function QueryPageContent() {
     const searchParams = useSearchParams();
     const connectionId = searchParams?.get('connection');
     const { theme } = useTheme();
+    const toast = useToast();
 
     // Multi-tab state
     const [tabs, setTabs] = useState<QueryTab[]>([]);
@@ -208,7 +209,6 @@ function QueryPageContent() {
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [showExportModal, setShowExportModal] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false);
-    const [showTemplates, setShowTemplates] = useState(false);
     const [showQueryPlan, setShowQueryPlan] = useState(false);
     const [queryPlan, setQueryPlan] = useState<any>(null);
     const [filteredResults, setFilteredResults] = useState<Map<number, any[]>>(new Map());
@@ -1294,15 +1294,6 @@ function QueryPageContent() {
                             Format
                         </button>
 
-                        <button
-                            onClick={() => setShowTemplates(true)}
-                            className="px-3 py-2 border border-border rounded-lg hover:bg-accent transition flex items-center gap-2"
-                            title="SQL Templates"
-                        >
-                            <FileStack className="w-4 h-4" />
-                            Templates
-                        </button>
-
                         <div className="w-px h-6 bg-border" />
 
                         <button
@@ -1462,7 +1453,7 @@ function QueryPageContent() {
                                                     // Get table name from result set
                                                     const tableName = results[activeTab].tableName;
                                                     if (!tableName) {
-                                                        alert('Cannot edit: Unable to determine table name from query. Only simple SELECT queries support inline editing.');
+                                                        toast.error('Cannot edit: Unable to determine table name from query. Only simple SELECT queries support inline editing.');
                                                         return;
                                                     }
 
@@ -1627,13 +1618,7 @@ function QueryPageContent() {
                 />
             )}
 
-            {/* SQL Templates Modal */}
-            {showTemplates && (
-                <SQLTemplateModal
-                    onSelect={(sql) => setQuery(sql)}
-                    onClose={() => setShowTemplates(false)}
-                />
-            )}
+
 
             {/* Query Plan Viewer */}
             {showQueryPlan && queryPlan && connectionInfo && (

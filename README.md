@@ -57,13 +57,16 @@ Unlike DBeaver, TablePlus, or any other database tool - BosDB has **Git-like + S
 
 ### 🔥 Core Features
 - ✅ **Query Editor** - Monaco editor with syntax highlighting
+- ✅ **AI SQL Assistant** - Get AI-powered help writing SQL queries
+- ✅ **SQL Debugger** - Set breakpoints and debug stored procedures
 - ✅ **Execute Selected** - Run only highlighted SQL
+- ✅ **Multi-Tab Editor** - Work on multiple queries simultaneously
 - ✅ **Data Grid Editing** - Inline editing like a spreadsheet
 - ✅ **Table Designer** - Visual table creation with columns, types, constraints
 - ✅ **Query History** - Automatic tracking of all queries
-- ✅ **Schema Explorer** - Browse databases, schemas, and tables
+- ✅ **Schema Explorer** - Browse databases, schemas, tables, and procedures
 - ✅ **Syntax Validation** - Real-time query validation with helpful warnings
-- ✅ **CSV Export** - Export query results to CSV
+- ✅ **CSV/JSON Export** - Export query results to multiple formats
 - ✅ **Dark/Light Mode** - Fully themeable interface
 - ✅ **Connection Management** - Secure credential storage
 
@@ -77,16 +80,20 @@ Unlike DBeaver, TablePlus, or any other database tool - BosDB has **Git-like + S
 - ✅ **History Timeline** - Visual history of all commits
 - ✅ **Pending Changes** - See uncommitted changes
 - ✅ **Individual Commits** - Commit specific changes
+- ✅ **Fast Parallel Loading** - 3x faster VCS page load
 
 ### 👥 Multi-User System
 - ✅ **User Login** - Secure authentication with passwords
 - ✅ **Password Security** - bcrypt hashing, strength validation
 - ✅ **User Registration** - New users request access
 - ✅ **Admin Approval** - Admins approve/reject user requests
+- ✅ **Super Admin Panel** - Dedicated panel for platform owners
+- ✅ **Organization Scoping** - Admins only manage their org users
 - ✅ **Per-User Commits** - Track who made each change
-- ✅ **Role-Based Access** - Admin and user roles
+- ✅ **Role-Based Access** - Admin, user, and super-admin roles
 - ✅ **Granular Permissions** - Read, Edit, Commit, Manage Schema per connection
 - ✅ **Audit Trail** - Complete history of who did what
+- ✅ **Demo Accounts** - Pre-configured accounts for instant testing
 
 ### 🛡️ Security
 - ✅ **Encrypted Credentials** - AES-256 encryption at rest
@@ -95,6 +102,8 @@ Unlike DBeaver, TablePlus, or any other database tool - BosDB has **Git-like + S
 - ✅ **Query Timeouts** - Prevent long-running queries
 - ✅ **Row Limits** - Automatic result set limiting
 - ✅ **Permission Enforcement** - Granular access control
+- ✅ **Separate Super Admin DB** - Isolated super admin credentials
+- ✅ **Domain Restrictions** - Super admin access limited to @bosdb.com
 
 ---
 
@@ -190,11 +199,33 @@ npm run dev
 ### Access Application
 Open [http://localhost:3001](http://localhost:3001) in your browser.
 
+### 🎯 Demo Accounts (No Registration Required!)
+
+Test BosDB immediately with pre-configured accounts:
+
+**Individual Account**
+```
+Email:    demo@gmail.com
+Password: Demo123!
+```
+
+**Enterprise Account**
+```
+Email:    demo@company.com
+Password: Demo123!
+```
+
+**Owner Account**
+```
+Regular Login (/login):              ayush@bosdb.com / Arush098!
+Super Admin (/super-admin/login):    ayush@bosdb.com / Arush098!
+```
+
 **First Time Setup:**
-1. Visit `/login`
-2. Default admin: `admin` / password: `Admin@123`
-3. Go to Admin Panel to approve users
-4. Go to `/pricing` to activate Pro trial
+1. Visit `/login` and select a demo account
+2. Explore all features immediately
+3. Or register your own account and get admin approval
+4. Access Super Admin panel at `/super-admin/login` (BosDB domain only)
 5. Start using!
 
 ---
@@ -335,30 +366,39 @@ BosDB/
 
 ## 🎯 Roadmap
 
-### ✅ Completed (v0.3.0)
+### ✅ Completed (v0.4.0)
 - Multi-database support (5 databases)
 - Query editor with syntax highlighting
+- **AI SQL Assistant** - Get help writing queries
+- **SQL Debugger** - Debug stored procedures with breakpoints
+- **Multi-Tab Editor** - Multiple query tabs
 - Version control system (Git + SVN-like)
+- **Fast VCS Loading** - 3x faster with parallel API calls
 - Multi-user authentication with passwords
 - User approval workflow
+- **Super Admin System** - Separate admin panel for platform owners
+- **Organization-scoped Admin** - Admins only manage their org
 - Granular permissions (per-connection)
 - Table Designer
 - Data Grid with inline editing
+- **Demo Accounts** - Instant testing without registration
 - Pro subscription system
 - Enterprise deployment model
+- Export to CSV/JSON
+- Query history panel
 
 ### 🚧 In Progress
-- Export to JSON/Excel
-- Query history panel
-- Multiple query tabs
+- Import data (CSV, JSON)
+- Query builder (visual)
+- Auto-complete improvements
 
 ### 📋 Planned
-- Auto-complete (tables, columns, keywords)
 - ER diagram generator
-- Query builder (visual)
-- Data import (CSV, JSON)
 - Performance monitoring
 - SSH tunnel support
+- Database comparison tools
+- Scheduled queries
+- Report generation
 
 ---
 

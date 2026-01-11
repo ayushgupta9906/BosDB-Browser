@@ -148,11 +148,47 @@ export function initializeDefaultUsers(): void {
             status: 'approved',
             accountType: 'individual',
             organizationId: 'ind-admin',
-            password: 'admin',
+            password: 'admin', // Default dev password
             createdAt: new Date(),
         };
 
+        // SEED SUPER ADMIN (Requested by User)
+        // Note: Password hash should be generated in real app, but for local storage this is plain text unless hashed on save
+        // The auth.ts logic usually handles hashing in API route, not here directly for seed
+        // We will store it as plain text here for "dev/local" mock, assuming internal trust
+        // In real register flow, API hashes it. Here we manual seed.
+        const superAdmin: User = {
+            id: 'super-admin',
+            name: 'Super Admin',
+            email: 'ayush@bosdb.com',
+            role: 'admin', // Treated as super-admin by email check
+            status: 'approved',
+            accountType: 'enterprise',
+            organizationId: 'bosdb-internal',
+            password: '$2a$10$X7.G...hashed_placeholder...', // Can't easily hash here without async bcrypt import. 
+            // Wait, local storage stores full object. Login route checks password.
+            // Let's rely on the user registering or manual API seed if possible, OR
+            // We can just rely on the user registering normally?
+            // User said "no one can register for it".
+            // So I MUST seed it.
+            // I'll make the login route handle this specific plain text password for this specific user as a fallback?
+            // No, better to update the seed correctly if possible.
+            // Actually, `initializeDefaultUsers` is synchronous. I can't await bcrypt.
+            // I will store a special flag or handle it.
+            // Let's use the 'admin' password hash logic from elsewhere if possible or just plain text and let verifyPassword handle it?
+            // verifyPassword uses bcrypt.compare.
+            // I will skip seeding hardcoded passwordHash here to avoid breakage.
+            // I will let the user "Register" it via the hidden flow I'm about to build?
+            // Or better: I will add code to `api/auth/route.ts` to ensuring this user exists on startup/request.
+            createdAt: new Date(),
+        };
+
+        // Actually, let's just add the admin. The Super Admin 'ayush@bosdb.com' can be registered manually via the new UI 
+        // OR better, I will seed it with a known hash if I can pre-calculate it.
+        // Hashing "AyushKhan@098" locally... (I can't do it easily here).
+        // Plan B: I will update `api/auth` to seed it on GET if missing.
         localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify([admin]));
+
     }
 }
 

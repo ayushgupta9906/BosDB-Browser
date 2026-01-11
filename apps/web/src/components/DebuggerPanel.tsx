@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { Play, Pause, StepForward, Square, Bug, Trash2, RotateCcw, X } from 'lucide-react';
+import { useToast } from '@/components/ToastProvider';
 
 interface DebuggerPanelProps {
     connectionId: string;
@@ -36,6 +37,7 @@ export default function DebuggerPanel({
     onClose, // Add close handler
 }: DebuggerPanelProps) {
     const [variables, setVariables] = useState<{ name: string; value: any }[]>([]);
+    const toast = useToast();
 
 
     // Poll session state
@@ -84,7 +86,7 @@ export default function DebuggerPanel({
                     setStatus('stopped');
                     setSessionId(null);
                     setCurrentLine(null);
-                    alert('✅ Debugging completed!');
+                    toast.success('Debugging completed!');
                 } else if (data.pausedAt) {
                     setCurrentLine(data.pausedAt);
                     setStatus('paused');
@@ -111,12 +113,12 @@ export default function DebuggerPanel({
                     setCurrentLine(data.currentStatement.lineNumber);
                     setStatus('paused');
                 } else if (data.error) {
-                    alert(`Step failed: ${data.error}`);
+                    toast.error(`Step failed: ${data.error}`);
                 }
             } else {
                 const errorText = await res.text();
                 console.error('[Debug] Step failed with status:', res.status, errorText);
-                alert(`Step failed: ${errorText}`);
+                toast.error(`Step failed: ${errorText}`);
             }
         } catch (e) {
             console.error('Failed to step:', e);
@@ -125,7 +127,7 @@ export default function DebuggerPanel({
 
     const handleRewind = async () => {
         // Not implemented yet
-        alert('⚠️ Step back feature coming soon!');
+        toast.info('Step back feature coming soon!');
     };
 
     const handleStop = async () => {
@@ -163,14 +165,14 @@ export default function DebuggerPanel({
                 setSessionId(newSessionId);
                 setStatus('paused');
                 setCurrentLine(breakpoints.length > 0 ? breakpoints[0] : 1);
-                alert('✅ Debug session started! Click "Step" or "Resume" to execute.');
+                toast.success('Debug session started! Click "Step" or "Resume" to execute.');
             } else {
                 console.error('[Debug] No session ID in response:', data);
-                alert('❌ Failed to get session ID from response');
+                toast.error('Failed to get session ID from response');
             }
         } catch (e) {
             console.error('Failed to start debugging:', e);
-            alert('❌ Failed to start debugging. Check console for errors.');
+            toast.error('Failed to start debugging. Check console for errors.');
         }
     };
 

@@ -134,10 +134,9 @@ export async function getOrCreateOrgForUser(email: string, accountType: 'individ
             org = await findOrganizationByDomain(domain);
 
             if (!org) {
-                const companyName = domain.split('.')[0];
                 const newOrg = {
                     id: domain,
-                    name: companyName.charAt(0).toUpperCase() + companyName.slice(1),
+                    name: `@${domain}`, // Use email domain format: @bosdb.com, @flipkart.com
                     type: 'enterprise' as const,
                     domain: domain,
                     adminUserId: null,

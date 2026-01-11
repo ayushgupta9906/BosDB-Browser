@@ -113,11 +113,45 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid parameters' }, { status: 400 });
         }
 
+        // Get admin's email and role from headers
+        const adminEmail = request.headers.get('x-user-email');
+        const adminRole = request.headers.get('x-user-role');
+
+        console.log('[Admin Users PATCH] Request from:', adminEmail, 'Role:', adminRole);
+
+        if (!adminEmail) {
+            console.log('[Admin Users PATCH] ERROR: No admin email in headers');
+            return NextResponse.json({ error: 'Admin email required' }, { status: 401 });
+        }
+
+        if (adminRole !== 'admin') {
+            console.log('[Admin Users PATCH] ERROR: User is not an admin');
+            return NextResponse.json({ error: 'Unauthorized: Admin role required' }, { status: 403 });
+        }
+
+        // Get admin user to verify organization
+        const adminUser = await findUserByEmail(adminEmail);
+        if (!adminUser || !adminUser.organizationId) {
+            console.log('[Admin Users PATCH] ERROR: Admin user not found');
+            return NextResponse.json({ error: 'Admin user not found' }, { status: 404 });
+        }
+
+        // Get the user being updated
         const user = await findUserById(userId);
         if (!user) {
+            console.log('[Admin Users PATCH] ERROR: Target user not found');
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
+        // Verify same organization
+        if (user.organizationId !== adminUser.organizationId) {
+            console.log('[Admin Users PATCH] ERROR: Organization mismatch');
+            return NextResponse.json({
+                error: 'Cannot manage users from different organizations'
+            }, { status: 403 });
+        }
+
+        console.log(`[Admin Users PATCH] SUCCESS: Updating ${user.email} status to ${status}`);
         await updateUser(userId, { status });
 
         return NextResponse.json({ success: true });

@@ -7,6 +7,7 @@ export interface IOrganization {
     type: 'individual' | 'enterprise';
     domain?: string;
     adminUserId: string | null;
+    status: 'active' | 'suspended';
     subscription: {
         plan: 'free' | 'pro' | 'enterprise';
         planType?: 'trial' | 'monthly' | 'yearly';
@@ -24,6 +25,7 @@ const OrganizationSchema = new Schema<IOrganization>({
     type: { type: String, enum: ['individual', 'enterprise'], default: 'individual' },
     domain: { type: String },
     adminUserId: { type: String, default: null },
+    status: { type: String, enum: ['active', 'suspended'], default: 'active' },
     subscription: {
         plan: { type: String, enum: ['free', 'pro', 'enterprise'], default: 'free' },
         planType: { type: String, enum: ['trial', 'monthly', 'yearly'] },

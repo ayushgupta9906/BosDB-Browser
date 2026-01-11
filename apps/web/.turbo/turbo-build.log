@@ -31,23 +31,171 @@
 65:8  Warning: React Hook useEffect has missing dependencies: 'setCurrentLine' and 'setStatus'. Either include them or remove the dependency array. If 'setStatus' changes too often, find the parent component that defines it and wrap that definition in useCallback.  react-hooks/exhaustive-deps
 
 info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
-Failed to compile.
+   Collecting page data ...
+[Store] Initialized with Project Root: C:\Users\Arush Gupta\Downloads\BosDB-Browser (Vercel: false)
+[Store] Error reading legacy file at C:\Users\Arush Gupta\Downloads\BosDB-Browser\.bosdb-connections.json: SyntaxError: Expected double-quoted property name in JSON at position 21869 (line 572 column 1)
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+    at JSON.parse (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5413
+    at Array.forEach (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5335
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5899
+    at 24672 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:7678)
+    at t (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:128)
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+    at 10920 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\admin\assign\route.js:1:695)
+    at t (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:128)
+    at t (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\admin\assign\route.js:1:6073)
+[Store] Initialized with Project Root: C:\Users\Arush Gupta\Downloads\BosDB-Browser (Vercel: false)
+[Store] Error reading legacy file at C:\Users\Arush Gupta\Downloads\BosDB-Browser\.bosdb-connections.json: SyntaxError: Expected double-quoted property name in JSON at position 21869 (line 572 column 1)
+    at JSON.parse (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5413
+    at Array.forEach (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5335
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5899
+    at 24672 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:7678)
+    at t (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:128)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\data\update\route.js:1:2357
+    at t.a (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:891)
+    at 90024 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\data\update\route.js:1:2292)
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+[Store] Initialized with 10 connections
+[Store] Initialized with 10 connections
+[Store] Initialized with Project Root: C:\Users\Arush Gupta\Downloads\BosDB-Browser (Vercel: false)
+[Store] Error reading legacy file at C:\Users\Arush Gupta\Downloads\BosDB-Browser\.bosdb-connections.json: SyntaxError: Expected double-quoted property name in JSON at position 21869 (line 572 column 1)
+    at JSON.parse (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5413
+    at Array.forEach (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5335
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5899
+    at 24672 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:7678)
+    at t (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:128)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\connections\route.js:1:2407
+    at t.a (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:891)
+    at 30149 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\connections\route.js:1:2286)
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+[Store] Initialized with 10 connections
+[Store] Initialized with Project Root: C:\Users\Arush Gupta\Downloads\BosDB-Browser (Vercel: false)
+[Store] Error reading legacy file at C:\Users\Arush Gupta\Downloads\BosDB-Browser\.bosdb-connections.json: SyntaxError: Expected double-quoted property name in JSON at position 21869 (line 572 column 1)
+    at JSON.parse (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5413
+    at Array.forEach (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5335
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5899
+    at 24672 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:7678)
+    at t (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:128)
+    at 55264 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\query\route.js:1:1725)
+    at t (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:128)
+    at t (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\query\route.js:1:7565)
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+[Store] Initialized with 10 connections
+[MongoDB] Attempting to connect to MongoDB Atlas...
+[MongoDB] Attempting to connect to MongoDB Atlas...
+[MongoDB] Attempting to connect to MongoDB Atlas...
+[MongoDB] Attempting to connect to MongoDB Atlas...
+[MongoDB] Attempting to connect to MongoDB Atlas...
+[Store] Initialized with Project Root: C:\Users\Arush Gupta\Downloads\BosDB-Browser (Vercel: false)
+[Store] Error reading legacy file at C:\Users\Arush Gupta\Downloads\BosDB-Browser\.bosdb-connections.json: SyntaxError: Expected double-quoted property name in JSON at position 21869 (line 572 column 1)
+    at JSON.parse (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5413
+    at Array.forEach (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5335
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5899
+    at 24672 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:7678)
+    at t (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:128)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\vcs\rollback\route.js:1:2420
+    at t.a (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:891)
+    at 97997 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\vcs\rollback\route.js:1:2292)
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+[Store] Initialized with 10 connections
+[MongoDB] Attempting to connect to MongoDB Atlas...
+[MongoDB] ✅ Connected to MongoDB Atlas successfully!
+[MongoDB] ✅ Connected to MongoDB Atlas successfully!
+   Generating static pages (0/36) ...
+   Generating static pages (9/36) 
+[MongoDB] ✅ Connected to MongoDB Atlas successfully!
+[MongoDB] ✅ Connected to MongoDB Atlas successfully!
+[MongoDB] ✅ Connected to MongoDB Atlas successfully!
+[MongoDB] ✅ Connected to MongoDB Atlas successfully!
+   Generating static pages (18/36) 
+[MongoDB] Attempting to connect to MongoDB Atlas...
+[MongoDB] ✅ Connected to MongoDB Atlas successfully!
+   Generating static pages (27/36) 
+[Store] Initialized with Project Root: C:\Users\Arush Gupta\Downloads\BosDB-Browser (Vercel: false)
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+[Store] Found 7 connections at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.bosdb-connections.json
+[Store] Initialized with 10 connections
+[Store] Error reading legacy file at C:\Users\Arush Gupta\Downloads\BosDB-Browser\.bosdb-connections.json: SyntaxError: Expected double-quoted property name in JSON at position 21869 (line 572 column 1)
+    at JSON.parse (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5413
+    at Array.forEach (<anonymous>)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5335
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:5899
+    at 24672 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\chunks\4672.js:8:7678)
+    at t (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:128)
+    at C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\vcs\rollback\route.js:1:2420
+    at t.a (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\webpack-runtime.js:1:891)
+    at 97997 (C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web\.next\server\app\api\vcs\rollback\route.js:1:2292)
+ ✓ Generating static pages (36/36)
+   Finalizing page optimization ...
+   Collecting build traces ...
 
-./src/app/api/debug/sessions/[sessionId]/breakpoints/route.ts:40:40
-Type error: Property 'setBreakpoint' does not exist on type '{ getSession: (id: string) => DebugSession | null; createSession: (connectionId: string, query: string, breakpoints: number[], userId?: string | null | undefined) => DebugSession; ... 6 more ...; getAllSessions: () => DebugSession[]; }'.
+Route (app)                                           Size     First Load JS
+┌ ○ /                                                 181 B          96.2 kB
+├ ○ /_not-found                                       138 B          87.4 kB
+├ ○ /admin                                            4.68 kB         101 kB
+├ ƒ /api/admin/assign                                 0 B                0 B
+├ ƒ /api/admin/users                                  0 B                0 B
+├ ƒ /api/ai/generate-sql                              0 B                0 B
+├ ƒ /api/auth                                         0 B                0 B
+├ ƒ /api/auth/change-password                         0 B                0 B
+├ ƒ /api/connections                                  0 B                0 B
+├ ƒ /api/data/update                                  0 B                0 B
+├ ƒ /api/debug/sessions                               0 B                0 B
+├ ƒ /api/debug/sessions/[sessionId]                   0 B                0 B
+├ ƒ /api/debug/sessions/[sessionId]/breakpoints       0 B                0 B
+├ ƒ /api/debug/sessions/[sessionId]/continue          0 B                0 B
+├ ƒ /api/debug/sessions/[sessionId]/control/[action]  0 B                0 B
+├ ƒ /api/debug/sessions/[sessionId]/step              0 B                0 B
+├ ƒ /api/docker/[id]                                  0 B                0 B
+├ ƒ /api/docker/containers                            0 B                0 B
+├ ƒ /api/docker/provision                             0 B                0 B
+├ ƒ /api/history                                      0 B                0 B
+├ ƒ /api/org/members                                  0 B                0 B
+├ ƒ /api/payment                                      0 B                0 B
+├ ƒ /api/procedures                                   0 B                0 B
+├ ƒ /api/query                                        0 B                0 B
+├ ƒ /api/saved-queries                                0 B                0 B
+├ ƒ /api/schema                                       0 B                0 B
+├ ƒ /api/schema/table                                 0 B                0 B
+├ ƒ /api/subscription                                 0 B                0 B
+├ ƒ /api/tables                                       0 B                0 B
+├ ƒ /api/vcs/branches                                 0 B                0 B
+├ ƒ /api/vcs/commit                                   0 B                0 B
+├ ƒ /api/vcs/pending                                  0 B                0 B
+├ ƒ /api/vcs/rollback                                 0 B                0 B
+├ ƒ /api/vcs/rollback/diff                            0 B                0 B
+├ ○ /dashboard                                        11.2 kB         107 kB
+├ ○ /docs                                             2.23 kB        98.2 kB
+├ ƒ /docs/[slug]                                      181 B          96.2 kB
+├ ○ /history                                          2.57 kB        98.6 kB
+├ ○ /login                                            3.63 kB        99.6 kB
+├ ○ /pricing                                          12.8 kB         109 kB
+├ ○ /query                                            201 kB          297 kB
+├ ○ /saved-queries                                    3.21 kB        99.2 kB
+├ ○ /settings                                         4.99 kB         101 kB
+├ ○ /vcs-test                                         876 B          88.2 kB
+└ ○ /version-control                                  5.62 kB         102 kB
++ First Load JS shared by all                         87.3 kB
+  ├ chunks/117-6e5484d1a83a55e3.js                    31.7 kB
+  ├ chunks/fd9d1056-0d19444e3e44d8fd.js               53.6 kB
+  └ other shared chunks (total)                       1.92 kB
 
-[0m [90m 38 |[39m         }[0m
-[0m [90m 39 |[39m[0m
-[0m[31m[1m>[22m[39m[90m 40 |[39m         [36mconst[39m breakpoint [33m=[39m debugEngine[33m.[39msetBreakpoint(params[33m.[39msessionId[33m,[39m type[33m,[39m config [33m||[39m {})[33m;[39m[0m
-[0m [90m    |[39m                                        [31m[1m^[22m[39m[0m
-[0m [90m 41 |[39m[0m
-[0m [90m 42 |[39m         [36mreturn[39m [33mNextResponse[39m[33m.[39mjson({ breakpoint })[33m;[39m[0m
-[0m [90m 43 |[39m     } [36mcatch[39m (error[33m:[39m any) {[0m
-Next.js build worker exited with code: 1 and signal: null
-npm error Lifecycle script `build` failed with error:
-npm error code 1
-npm error path C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web
-npm error workspace @bosdb/web@0.1.0
-npm error location C:\Users\Arush Gupta\Downloads\BosDB-Browser\apps\web
-npm error command failed
-npm error command C:\WINDOWS\system32\cmd.exe /d /s /c next build
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

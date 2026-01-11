@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { generateCreateTableSQL, TableDef, ColumnDef } from '@/lib/sql-helper';
 import { Plus, Trash2, Save, X, Eye } from 'lucide-react';
+import { useToast } from '@/components/ToastProvider';
 
 interface TableDesignerProps {
     connectionId: string;
@@ -28,6 +29,7 @@ export default function TableDesigner({ connectionId, onClose, onSuccess }: Tabl
     const [previewSql, setPreviewSql] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const toast = useToast();
 
     // Auto-update preview when def changes
     useEffect(() => {
@@ -89,7 +91,7 @@ export default function TableDesigner({ connectionId, onClose, onSuccess }: Tabl
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Failed to create table');
 
-            alert('Table created successfully!');
+            toast.success('Table created successfully!');
             onSuccess();
         } catch (err: any) {
             setError(err.message);

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getCurrentUser, logout } from '@/lib/auth';
 import { fetchOrgSubscription, getOrgSubscriptionStatus, isDatabaseAllowed, isPro } from '@/lib/subscription';
+import { useToast } from '@/components/ToastProvider';
 
 interface Connection {
     id: string;
@@ -28,6 +29,7 @@ export default function DashboardPage() {
     const [currentUser, setCurrentUser] = useState<ReturnType<typeof getCurrentUser>>(null);
     const [subscriptionStatus, setSubscriptionStatus] = useState({ isPro: false, isTrial: false });
     const [orgName, setOrgName] = useState<string | null>(null);
+    const toast = useToast();
 
     useEffect(() => {
         // Check if user is logged in
@@ -287,6 +289,7 @@ function QuickActionCard({
 
 function ConnectionCard({ connection }: { connection: Connection }) {
     const [deleting, setDeleting] = useState(false);
+    const toast = useToast();
 
     const handleDelete = async () => {
         if (!confirm(`Delete connection "${connection.name}"? This action cannot be undone.`)) {
@@ -317,7 +320,7 @@ function ConnectionCard({ connection }: { connection: Connection }) {
             // Refresh connections list
             window.location.reload();
         } catch (error: any) {
-            alert(error.message || 'Failed to delete connection');
+            toast.error(error.message || 'Failed to delete connection');
             setDeleting(false);
         }
     };

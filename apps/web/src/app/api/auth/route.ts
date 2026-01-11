@@ -1,17 +1,87 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUsers, createUser, findUserById, findUserByEmail, getUsersByOrg } from '@/lib/users-store';
+import { getUsers, createUser, findUserById, findUserByEmail, getUsersByOrg, updateUser } from '@/lib/users-store';
 import { hashPassword, verifyPassword, validatePassword } from '@/lib/auth';
 import { getOrCreateOrgForUser, findOrganizationById, findOrganizationByDomain, extractDomain, updateOrganization } from '@/lib/organization';
 import { generateTOTP, generateQRCode, verifyTOTP } from '@/lib/totp-manager';
+import { findSuperAdminByEmail, seedDefaultSuperAdmin, updateSuperAdmin } from '@/lib/super-admin-store';
 
 export async function GET() {
+    // Seed SuperAdmin in separate collection on startup
+    await seedDefaultSuperAdmin();
+
+    // ALSO seed ayush@bosdb.com in regular User collection so the account can login from both pages
+    const allUsers = await getUsers();
+    const ayushUser = allUsers.find(u => u.email === 'ayush@bosdb.com');
+
+    if (!ayushUser) {
+        console.log('[Auth] Seeding ayush@bosdb.com in User collection...');
+        const hashedPassword = await hashPassword('Arush098!');
+        await createUser({
+            id: 'ayush-bosdb',
+            email: 'ayush@bosdb.com',
+            name: 'Ayush (BosDB Owner)',
+            password: hashedPassword,
+            role: 'admin',
+            status: 'approved',
+            accountType: 'enterprise',
+            organizationId: 'bosdb-internal',
+            createdAt: new Date()
+        });
+        console.log('[Auth] ayush@bosdb.com added to User collection');
+    } else if (ayushUser.password) {
+        // Update password to match super admin
+        const newPassword = await hashPassword('Arush098!');
+        await updateUser(ayushUser.id, { password: newPassword });
+        console.log('[Auth] Password synced for ayush@bosdb.com in User collection');
+    }
+
+    // SEED DEMO ACCOUNTS for visitors to test
+    const demoAccounts = [
+        {
+            id: 'demo-individual',
+            email: 'demo@gmail.com',
+            name: 'Demo User (Individual)',
+            password: 'Demo123!',
+            role: 'admin',
+            status: 'approved',
+            accountType: 'individual',
+            organizationId: 'demo-individual-org'
+        },
+        {
+            id: 'demo-company',
+            email: 'demo@company.com',
+            name: 'Demo Admin (Company)',
+            password: 'Demo123!',
+            role: 'admin',
+            status: 'approved',
+            accountType: 'enterprise',
+            organizationId: 'demo-company-org'
+        }
+    ];
+
+    for (const demoAccount of demoAccounts) {
+        const exists = allUsers.find(u => u.email === demoAccount.email);
+        if (!exists) {
+            console.log(`[Auth] Seeding demo account: ${demoAccount.email}`);
+            const hashedPassword = await hashPassword(demoAccount.password);
+            await createUser({
+                ...demoAccount,
+                password: hashedPassword,
+                role: demoAccount.role as 'admin' | 'user',
+                status: demoAccount.status as 'approved',
+                accountType: demoAccount.accountType as 'individual' | 'enterprise',
+                createdAt: new Date()
+            });
+        }
+    }
+
     // Public endpoint to list simple user info (for login page dropdown)
     const users = await getUsers();
 
     // Return user info with email as the unique identifier
-    // Filter out pending users to avoid confusion in the login dropdown
+    // Filter out pending users and NEVER include super admins (they're in a different collection)
     const publicUsers = users
-        .filter(u => u.status === 'approved')
+        .filter(u => u.status === 'approved' && u.role !== 'super-admin')
         .map(u => ({
             id: u.id,
             email: u.email,
@@ -28,10 +98,11 @@ export async function POST(request: NextRequest) {
         const { action, userId, password, googleId, ...userData } = body;
         const loginEmail = body.email || userId;
 
-        // --- LOGIN ---
+        // --- LOGIN (Regular Employee/User Login ONLY) ---
         if (action === 'login') {
             const user = await findUserByEmail(loginEmail);
-            console.log('[Auth API] Login attempt for email:', loginEmail);
+            console.log('[Auth API] Regular login attempt for email:', loginEmail);
+
 
             if (!user) {
                 return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
@@ -206,6 +277,64 @@ export async function POST(request: NextRequest) {
                 user: newUser,
                 organization: org,
                 message
+            });
+        }
+
+        // --- SUPER ADMIN LOGIN (Dedicated - Uses Separate SuperAdmin Collection) ---
+        if (action === 'super_admin_login') {
+            console.log(`[SuperAdmin Auth] Login attempt for: ${loginEmail}`);
+
+            // SECURITY: Only @bosdb.com domain can access super admin
+            if (!loginEmail.endsWith('@bosdb.com')) {
+                console.log('[SuperAdmin Auth] Access denied - not @bosdb.com domain');
+                return NextResponse.json({
+                    error: 'Access Denied: Super Admin access is restricted to BosDB domain only'
+                }, { status: 403 });
+            }
+
+            // Query SEPARATE SuperAdmin collection
+            const superAdmin = await findSuperAdminByEmail(loginEmail);
+
+            if (!superAdmin) {
+                console.log('[SuperAdmin Auth] No super admin found with this email');
+                return NextResponse.json({
+                    error: 'Invalid super admin credentials'
+                }, { status: 401 });
+            }
+
+            if (superAdmin.status === 'suspended') {
+                return NextResponse.json({
+                    error: 'This super admin account has been suspended'
+                }, { status: 403 });
+            }
+
+            // Validate Password
+            const isValid = await verifyPassword(password || '', superAdmin.password);
+
+            if (!isValid) {
+                console.log('[SuperAdmin Auth] Invalid password');
+                return NextResponse.json({
+                    error: 'Invalid super admin credentials'
+                }, { status: 401 });
+            }
+
+            // Update last login time
+            await updateSuperAdmin(superAdmin.id, {
+                lastLoginAt: new Date()
+            });
+
+            console.log(`[SuperAdmin Auth] Login successful for ${superAdmin.email}`);
+
+            // Return super admin data (formatted like User for frontend compatibility)
+            return NextResponse.json({
+                success: true,
+                user: {
+                    id: superAdmin.id,
+                    email: superAdmin.email,
+                    name: superAdmin.name,
+                    role: superAdmin.role,
+                    status: 'approved', // For frontend compatibility
+                }
             });
         }
 

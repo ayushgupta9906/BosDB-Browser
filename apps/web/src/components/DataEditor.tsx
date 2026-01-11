@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { detectPrimaryKey } from '@/lib/sql-helper';
 import { Save, X, AlertCircle } from 'lucide-react';
+import { useToast } from '@/components/ToastProvider';
 
 interface DataEditorProps {
     rows: any[];
@@ -24,6 +25,7 @@ export function DataEditor({ rows, fields, onSave, readOnly = false }: DataEdito
     const [primaryKeyCols, setPrimaryKeyCols] = useState<string[]>([]);
     const [isSaving, setIsSaving] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const toast = useToast();
 
     // Detect PKs on mount or field change
     useEffect(() => {
@@ -124,7 +126,7 @@ export function DataEditor({ rows, fields, onSave, readOnly = false }: DataEdito
             setEdits(new Map()); // Clear edits on success
         } catch (error) {
             console.error('Failed to save:', error);
-            alert('Failed to save changes');
+            toast.error('Failed to save changes');
         } finally {
             setIsSaving(false);
         }

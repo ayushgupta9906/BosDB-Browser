@@ -71,23 +71,25 @@ export default function HomePage() {
                         <FeatureCard
                             icon={<Database className="w-8 h-8" />}
                             title="100+ Database Types"
-                            description="PostgreSQL, MySQL, MongoDB, Redis, Cassandra, and 95+ more supported"
+                            description="PostgreSQL, MySQL, MongoDB, Redis, CockroachDB, and 95+ more supported"
                         />
                         <FeatureCard
                             icon={<GitBranch className="w-8 h-8" />}
-                            title="Version Control"
-                            description="Git-like commits, branches, rollback for your data"
+                            title="Git-like Version Control"
+                            description="Commits, branches, rollback for your data with 3x faster loading"
                             highlight={true}
                         />
                         <FeatureCard
                             icon={<Edit3 className="w-8 h-8" />}
-                            title="Data Grid Editing"
-                            description="Edit data inline with spreadsheet-like interface"
+                            title="AI SQL Assistant"
+                            description="Get AI-powered help writing queries & debugging"
+                            highlight={true}
                         />
                         <FeatureCard
                             icon={<Table className="w-8 h-8" />}
-                            title="Table Designer"
-                            description="Visual table creation with columns, types, constraints"
+                            title="SQL Debugger"
+                            description="Set breakpoints and debug stored procedures"
+                            highlight={true}
                         />
                     </div>
                 </section>
@@ -99,15 +101,21 @@ export default function HomePage() {
                         BosDB comes packed with features to streamline your database workflow
                     </p>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <FeatureItem icon={<Database />} title="Multi-Database Support" description="PostgreSQL, MySQL, MongoDB" />
-                        <FeatureItem icon={<GitBranch />} title="Version Control" description="Commits, branches, rollback" />
-                        <FeatureItem icon={<Edit3 />} title="Inline Data Editing" description="Spreadsheet-like grid editing" />
-                        <FeatureItem icon={<Table />} title="Table Designer" description="Visual schema creation" />
+                        <FeatureItem icon={<Database />} title="Multi-Database Support" description="PostgreSQL, MySQL, MongoDB, Redis, CockroachDB" />
+                        <FeatureItem icon={<GitBranch />} title="Version Control" description="Commits, branches, rollback - 3x faster" />
+                        <FeatureItem icon={<Zap />} title="AI SQL Assistant" description="AI-powered query help & suggestions" />
+                        <FeatureItem icon={<Shield />} title="SQL Debugger" description="Set breakpoints, debug procedures" />
+                        <FeatureItem icon={<Edit3 />} title="Multi-Tab Editor" description="Work on multiple queries simultaneously" />
+                        <FeatureItem icon={<Table />} title="Data Grid Editing" description="Spreadsheet-like inline editing" />
+                        <FeatureItem icon={<Database />} title="Table Designer" description="Visual schema creation" />
                         <FeatureItem icon={<Users />} title="Multi-User System" description="Login, roles, permissions" />
-                        <FeatureItem icon={<Shield />} title="Granular Permissions" description="Read, Edit, Commit, Schema control" />
-                        <FeatureItem icon={<Lock />} title="Password Security" description="bcrypt hashing, validation" />
-                        <FeatureItem icon={<Zap />} title="Query Editor" description="Monaco editor with autocompletion" />
-                        <FeatureItem icon={<CreditCard />} title="Pro Subscription" description="Demo payment for premium features" />
+                        <FeatureItem icon={<Shield />} title="Super Admin Panel" description="Platform owner control panel" />
+                        <FeatureItem icon={<Users />} title="Organization Scoping" description="Admins manage only their org" />
+                        <FeatureItem icon={<Lock />} title="Granular Permissions" description="Read, Edit, Commit, Schema control" />
+                        <FeatureItem icon={<Lock />} title="Password Security" description="bcrypt hashing, separated super admin DB" />
+                        <FeatureItem icon={<Zap />} title="Query Editor" description="Monaco editor with syntax highlighting" />
+                        <FeatureItem icon={<Star />} title="Demo Accounts" description="Test instantly - no registration needed" />
+                        <FeatureItem icon={<CreditCard />} title="Pro Subscription" description="Flexible pricing for teams" />
                     </div>
                 </section>
 
@@ -131,13 +139,16 @@ export default function HomePage() {
                                         <Check className="w-4 h-4 text-green-400" /> Unlimited Connections
                                     </li>
                                     <li className="flex items-center gap-2 text-gray-300">
-                                        <Check className="w-4 h-4 text-green-400" /> Version Control & Commits
+                                        <Check className="w-4 h-4 text-green-400" /> Git-like Version Control
                                     </li>
                                     <li className="flex items-center gap-2 text-gray-300">
-                                        <Check className="w-4 h-4 text-green-400" /> Table Designer
+                                        <Check className="w-4 h-4 text-green-400" /> AI SQL Assistant & Debugger
                                     </li>
                                     <li className="flex items-center gap-2 text-gray-300">
-                                        <Check className="w-4 h-4 text-green-400" /> Granular Permissions
+                                        <Check className="w-4 h-4 text-green-400" /> Table Designer & Multi-tabs
+                                    </li>
+                                    <li className="flex items-center gap-2 text-gray-300">
+                                        <Check className="w-4 h-4 text-green-400" /> Granular Permissions & Team Management
                                     </li>
                                 </ul>
                                 <Link

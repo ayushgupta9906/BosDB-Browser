@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Users, Database, Plus, Shield, ArrowLeft, Check, AlertCircle } from 'lucide-react';
 import { getCurrentUser } from '@/lib/auth';
+import { useToast } from '@/components/ToastProvider';
 
 interface User {
     id: string;
@@ -32,6 +33,7 @@ export default function AdminPage() {
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [showCreateUser, setShowCreateUser] = useState(false);
     const [assigningUser, setAssigningUser] = useState<User | null>(null);
+    const toast = useToast();
 
     useEffect(() => {
         const user = getCurrentUser();
@@ -74,16 +76,24 @@ export default function AdminPage() {
     const handleStatusUpdate = async (userId: string, newStatus: string) => {
         try {
             const user = getCurrentUser();
-            await fetch('/api/admin/users', {
+            const res = await fetch('/api/admin/users', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'x-user-id': user?.id || '',
+                    'x-user-email': user?.email || '',
                     'x-user-role': user?.role || ''
                 },
                 body: JSON.stringify({ userId, status: newStatus })
             });
-            fetchData();
+
+            if (res.ok) {
+                fetchData();
+            } else {
+                const errorData = await res.json();
+                console.error('Failed to update status:', errorData);
+                toast.error(errorData.error || 'Failed to update status');
+            }
         } catch (error) {
             console.error('Failed to update status:', error);
         }

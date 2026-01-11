@@ -9,6 +9,7 @@ import { fetchOrgSubscription, PRICING, isValidCoupon, calculateDiscountedPrice,
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import StripeCheckout from '@/components/StripeCheckout';
+import { useToast } from '@/components/ToastProvider';
 
 const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
     ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
@@ -32,6 +33,7 @@ export default function PricingPage() {
     const [isPaid, setIsPaid] = useState(false);
     const [paymentProcessing, setPaymentProcessing] = useState(false);
     const [clientSecret, setClientSecret] = useState('');
+    const toast = useToast();
 
     useEffect(() => {
         // Safe access to window/localStorage on client
@@ -144,13 +146,13 @@ export default function PricingPage() {
 
             const data = await res.json();
             if (res.ok && data.success) {
-                alert('🎉 Free trial activated! All users now have Pro features for 1 month!');
+                toast.success('🎉 Free trial activated! All users now have Pro features for 1 month!');
                 router.push('/dashboard');
             } else {
-                alert(data.error || 'Failed to activate trial');
+                toast.error(data.error || 'Failed to activate trial');
             }
         } catch (err: any) {
-            alert(err.message || 'Error activating trial');
+            toast.error(err.message || 'Error activating trial');
         } finally {
             setLoading(false);
         }
@@ -159,22 +161,19 @@ export default function PricingPage() {
     const handlePayment = async () => {
         setError('');
         const finalPrice = calculateDiscountedPrice((PRICING as any)[selectedPlan].price, appliedCoupon);
-        const isFreeWithCoupon = finalPrice === 0;
 
-        // Basic validation - skip if 100% off coupon
-        if (!isFreeWithCoupon) {
-            if (cardNumber.replace(/\s/g, '').length !== 16) {
-                setError('Card number must be 16 digits');
-                return;
-            }
-            if (!expiry.match(/^\d{2}\/\d{2}$/)) {
-                setError('Expiry must be MM/YY format');
-                return;
-            }
-            if (cvv.length !== 3) {
-                setError('CVV must be 3 digits');
-                return;
-            }
+        // ALWAYS require valid card details - even for $0 after discount
+        if (cardNumber.replace(/\s/g, '').length !== 16) {
+            setError('Card number must be 16 digits');
+            return;
+        }
+        if (!expiry.match(/^\d{2}\/\d{2}$/)) {
+            setError('Expiry must be MM/YY format');
+            return;
+        }
+        if (cvv.length !== 3) {
+            setError('CVV must be 3 digits');
+            return;
         }
 
         setLoading(true);
@@ -191,9 +190,9 @@ export default function PricingPage() {
                     plan: selectedPlan,
                     orgId: user?.organizationId, // Organization subscription
                     userId: user?.id,
-                    cardNumber: isFreeWithCoupon ? '0000000000000000' : cardNumber.replace(/\s/g, ''),
-                    expiryDate: isFreeWithCoupon ? '00/00' : expiry,
-                    cvv: isFreeWithCoupon ? '000' : cvv,
+                    cardNumber: cardNumber.replace(/\s/g, ''),
+                    expiryDate: expiry,
+                    cvv: cvv,
                     coupon: appliedCoupon
                 })
             });
@@ -421,10 +420,15 @@ export default function PricingPage() {
                             <tbody className="divide-y divide-white/5">
                                 <tr><td className="px-6 py-3 text-gray-300">Database Connections</td><td className="px-6 py-3 text-center text-gray-400">2</td><td className="px-6 py-3 text-center text-white">Unlimited</td><td className="px-6 py-3 text-center text-white">Unlimited</td></tr>
                                 <tr><td className="px-6 py-3 text-gray-300">Query History</td><td className="px-6 py-3 text-center text-gray-400">50</td><td className="px-6 py-3 text-center text-white">Unlimited</td><td className="px-6 py-3 text-center text-white">Unlimited</td></tr>
-                                <tr><td className="px-6 py-3 text-gray-300">Version Control</td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td></tr>
+                                <tr><td className="px-6 py-3 text-gray-300">Version Control (Git-like)</td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td></tr>
+                                <tr><td className="px-6 py-3 text-gray-300">AI SQL Assistant</td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td></tr>
+                                <tr><td className="px-6 py-3 text-gray-300">SQL Debugger</td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td></tr>
+                                <tr><td className="px-6 py-3 text-gray-300">Multi-Tab Query Editor</td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td></tr>
                                 <tr><td className="px-6 py-3 text-gray-300">Table Designer</td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td></tr>
                                 <tr><td className="px-6 py-3 text-gray-300">Data Grid Editing</td><td className="px-6 py-3 text-center text-gray-400">Read-only</td><td className="px-6 py-3 text-center text-white">Full Edit</td><td className="px-6 py-3 text-center text-white">Full Edit</td></tr>
                                 <tr><td className="px-6 py-3 text-gray-300">Granular Permissions</td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td></tr>
+                                <tr><td className="px-6 py-3 text-gray-300">Organization Admin Panel</td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td></tr>
+                                <tr><td className="px-6 py-3 text-gray-300">Team Collaboration</td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td></tr>
                                 <tr><td className="px-6 py-3 text-gray-300">SSO / SAML</td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td></tr>
                                 <tr><td className="px-6 py-3 text-gray-300">Audit Logs</td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><X className="w-4 h-4 text-red-400 mx-auto" /></td><td className="px-6 py-3 text-center"><Check className="w-4 h-4 text-green-400 mx-auto" /></td></tr>
                                 <tr><td className="px-6 py-3 text-gray-300">Support Level</td><td className="px-6 py-3 text-center text-gray-400">Community</td><td className="px-6 py-3 text-center text-white">Priority</td><td className="px-6 py-3 text-center text-indigo-400 font-bold">Dedicated</td></tr>
@@ -615,7 +619,7 @@ export default function PricingPage() {
                                                                 onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                                                                 placeholder="1234 5678 9123 0000"
                                                                 maxLength={19}
-                                                                disabled={calculateDiscountedPrice((PRICING as any)[selectedPlan].price, appliedCoupon) === 0 || loading}
+                                                                disabled={loading}
                                                                 className="w-full pl-11 pr-4 py-3 bg-transparent border-b border-white/5 text-sm text-white focus:bg-white/[0.02] outline-none transition disabled:opacity-50"
                                                             />
                                                         </div>
@@ -626,7 +630,7 @@ export default function PricingPage() {
                                                                 onChange={(e) => setExpiry(e.target.value)}
                                                                 placeholder="MM / YY"
                                                                 maxLength={5}
-                                                                disabled={calculateDiscountedPrice((PRICING as any)[selectedPlan].price, appliedCoupon) === 0 || loading}
+                                                                disabled={loading}
                                                                 className="w-full px-4 py-3 bg-transparent border-r border-white/5 text-sm text-white focus:bg-white/[0.02] outline-none transition disabled:opacity-50"
                                                             />
                                                             <div className="relative">
@@ -639,7 +643,7 @@ export default function PricingPage() {
                                                                     onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
                                                                     placeholder="CVC"
                                                                     maxLength={3}
-                                                                    disabled={calculateDiscountedPrice((PRICING as any)[selectedPlan].price, appliedCoupon) === 0 || loading}
+                                                                    disabled={loading}
                                                                     className="w-full px-4 py-3 bg-transparent text-sm text-white focus:bg-white/[0.02] outline-none transition disabled:opacity-50"
                                                                 />
                                                             </div>

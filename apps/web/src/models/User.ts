@@ -7,8 +7,8 @@ export interface IUser {
     name: string;
     password?: string;
     googleId?: string;
-    role: 'admin' | 'user';
-    status: 'pending' | 'approved' | 'rejected';
+    role: 'admin' | 'user' | 'super-admin';
+    status: 'pending' | 'approved' | 'rejected' | 'suspended';
     accountType: 'individual' | 'enterprise';
     organizationId: string;
     permissions?: any[];
@@ -22,7 +22,7 @@ const UserSchema = new Schema<IUser>({
     name: { type: String, required: true },
     password: { type: String },
     googleId: { type: String },
-    role: { type: String, enum: ['admin', 'user'], default: 'user' },
+    role: { type: String, enum: ['admin', 'user', 'super-admin'], default: 'user' },
     status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
     accountType: { type: String, enum: ['individual', 'enterprise'], default: 'enterprise' },
     organizationId: { type: String, required: true },
@@ -34,6 +34,11 @@ const UserSchema = new Schema<IUser>({
 // Compound unique index: User ID must be unique ONLY within the same organization
 UserSchema.index({ id: 1, organizationId: 1 }, { unique: true });
 
-const User: Model<IUser> = mongoose.models.User || mongoose.model('User', UserSchema);
+// Prevent Mongoose OverwriteModelError by deleting if exists (development fix)
+if (mongoose.models.User) {
+    delete mongoose.models.User;
+}
+
+const User: Model<IUser> = mongoose.model('User', UserSchema);
 
 export default User;

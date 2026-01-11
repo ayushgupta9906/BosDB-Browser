@@ -1,6 +1,7 @@
 'use client';
 
 import { ThemeProvider } from '@/components/theme-provider';
+import { ToastProvider } from '@/components/ToastProvider';
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
@@ -10,7 +11,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
             enableSystem
             disableTransitionOnChange
         >
-            {children}
+            <ToastProvider>
+                {children}
+            </ToastProvider>
         </ThemeProvider>
     );
 }
