@@ -1,5 +1,16 @@
-# Next.js
-.next/
+logs/
+!logs/**/
+!logs/**/.gitkeep
+.env
+node_modules
+.turbo
+apps/web/data/docker-databases
+apps/web/.bosdb-data
+apps/web/.bosdb-vcs
+.env
+.env.local
+.env.production
+dist/
 build/
 dist/
 out/
