@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { continueDebugSession } from '@/lib/debug-engine';
 
 export async function POST(
-    request: NextRequest,
+    _request: NextRequest,
     { params }: { params: { sessionId: string } }
 ) {
     const sessionId = params.sessionId;

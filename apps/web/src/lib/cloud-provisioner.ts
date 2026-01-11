@@ -347,7 +347,7 @@ async function provisionMongoDB(name: string, userId: string): Promise<CloudProv
 /**
  * Provision a MariaDB database on the shared cloud instance
  */
-async function provisionMariaDB(name: string, userId: string): Promise<CloudProvisionResult> {
+async function provisionMariaDB(name: string, _userId: string): Promise<CloudProvisionResult> {
     const config = CLOUD_DATABASES.mariadb;
     // MariaDB is similar to MySQL, sharing the logic but using its own config
     return {
