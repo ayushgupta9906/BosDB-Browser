@@ -53,6 +53,7 @@ export default function SuperAdminPage() {
     const [expandedOrg, setExpandedOrg] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState('overview');
+    const toast = useToast();
 
     // Management State
     const [editingOrg, setEditingOrg] = useState<any | null>(null);
